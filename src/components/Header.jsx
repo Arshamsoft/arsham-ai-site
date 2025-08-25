@@ -25,7 +25,7 @@ export default function Header() {
         <img
   src={logo}
   alt="Arsham Logo"
-  className="w-20 h-20" // سایز با Tailwind
+  className="w-40 h-40" // سایز با Tailwind
   style={{ imageRendering: 'pixelated' }} // افکت پیکسلی با CSS
 />
         <Link to="/" className="text-2xl font-bold text-blue-700"></Link>
