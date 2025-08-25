@@ -1,5 +1,5 @@
 import { Link } from 'react-router-dom'
-import LanguageSwitcher from './LanguageSwitcher'
+import LanguageSwitcher from '../LanguageSwitcher'
 
 export default function Header() {
   return (
