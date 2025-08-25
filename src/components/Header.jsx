@@ -22,7 +22,12 @@ export default function Header() {
 
       {/* لوگو در سمت چپ */}
       <div className="order-1 md:order-3 flex items-center gap-2">
-        <img src={logo} alt="Arshamai Logo" className="w-15 h-15 md:w-15 md:h-15" />
+        <img
+  src={logo}
+  alt="Arsham Logo"
+  className="w-20 h-20" // سایز با Tailwind
+  style={{ imageRendering: 'pixelated' }} // افکت پیکسلی با CSS
+/>
         <Link to="/" className="text-2xl font-bold text-blue-700"></Link>
       </div>
     </header>
