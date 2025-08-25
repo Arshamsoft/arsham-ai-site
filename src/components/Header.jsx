@@ -22,7 +22,7 @@ export default function Header() {
 
       {/* لوگو در سمت چپ */}
       <div className="order-1 md:order-3 flex items-center gap-2">
-        <img src={logo} alt="Arshamai Logo" className="w-30 h-30 md:w-25 md:h-25" />
+        <img src={logo} alt="Arshamai Logo" className="w-30 h-30 md:w-0 md:h-0" />
         <Link to="/" className="text-2xl font-bold text-blue-700"></Link>
       </div>
     </header>
