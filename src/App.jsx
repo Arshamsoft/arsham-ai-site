@@ -6,28 +6,22 @@ import Portfolio from './pages/Portfolio'
 import Shop from './pages/Shop'
 import About from './pages/About'
 import Contact from './pages/Contact'
-import { LanguageProvider } from './LanguageContext'
-
-function App() {
-  return (
-    <>
-      <Header />
-      <Routes>
-        <Route path="/" element={<Home />} />
-        <Route path="/portfolio" element={<Portfolio />} />
-        <Route path="/shop" element={<Shop />} />
-        <Route path="/about" element={<About />} />
-        <Route path="/contact" element={<Contact />} />
-      </Routes>
-      <Footer />
-    </>
-  )
-}
+import { LanguageProvider } from './context/LanguageContext'
 
 function App() {
   return (
     <LanguageProvider>
-      {/* سایر کامپوننت‌ها مثل Header و Routes */}
+      <>
+        <Header />
+        <Routes>
+          <Route path="/" element={<Home />} />
+          <Route path="/portfolio" element={<Portfolio />} />
+          <Route path="/shop" element={<Shop />} />
+          <Route path="/about" element={<About />} />
+          <Route path="/contact" element={<Contact />} />
+        </Routes>
+        <Footer />
+      </>
     </LanguageProvider>
   )
 }
