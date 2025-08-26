@@ -61,7 +61,7 @@ export default function Home() {
   return (
     <div className="flex flex-col items-center justify-center min-h-screen bg-gray-100 px-4">
       {/* عنوان سایت */}
-      <h1 className="text-4xl font-bold text-blue-700 mb-6">Arshamai.com</h1>
+      <h1 className="text-4xl font-bold text-blue-700 mb-6"></h1>
 
       {/* متن ترجمه‌شده */}
       <div className="text-center mt-10 mb-10">

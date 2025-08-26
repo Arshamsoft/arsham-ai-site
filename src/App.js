@@ -6,12 +6,11 @@ import Portfolio from './pages/Portfolio'
 import Shop from './pages/Shop'
 import About from './pages/About'
 import Contact from './pages/Contact'
-
-
+import { LanguageProvider } from './context/LanguageContext'
 
 function App() {
   return (
-    <>
+    <LanguageProvider>
       <Header />
       <Routes>
         <Route path="/" element={<Home />} />
@@ -21,7 +20,7 @@ function App() {
         <Route path="/contact" element={<Contact />} />
       </Routes>
       <Footer />
-    </>
+    </LanguageProvider>
   )
 }
 

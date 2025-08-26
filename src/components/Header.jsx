@@ -4,7 +4,7 @@ import logo from '../assets/logo-Arsham.png'
 import { LanguageContext } from '../context/LanguageContext'
 
 export default function Header() {
-  const { setLang } = useContext(LanguageContext)
+  const { lang, setLang } = useContext(LanguageContext)
   const [open, setOpen] = useState(false)
 
   return (
@@ -17,7 +17,7 @@ export default function Header() {
           className="w-20 h-20"
           style={{ imageRendering: 'pixelated' }}
         />
-        <Link to="/" className="text-2xl font-bold text-blue-700">Arshamai</Link>
+        <Link to="/" className="text-2xl font-bold text-blue-700"></Link>
       </div>
 
       {/* منوی وسط */}
@@ -35,7 +35,7 @@ export default function Header() {
           onClick={() => setOpen(!open)}
           className="bg-gray-200 px-3 py-1 rounded hover:bg-gray-300"
         >
-          زبان
+          انتخاب زبان  /  choice language
         </button>
 
         {open && (
