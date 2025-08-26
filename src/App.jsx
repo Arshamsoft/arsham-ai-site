@@ -6,6 +6,7 @@ import Portfolio from './pages/Portfolio'
 import Shop from './pages/Shop'
 import About from './pages/About'
 import Contact from './pages/Contact'
+import { LanguageProvider } from './LanguageContext'
 
 function App() {
   return (
@@ -20,6 +21,14 @@ function App() {
       </Routes>
       <Footer />
     </>
+  )
+}
+
+function App() {
+  return (
+    <LanguageProvider>
+      {/* سایر کامپوننت‌ها مثل Header و Routes */}
+    </LanguageProvider>
   )
 }
 

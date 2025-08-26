@@ -1,17 +1,26 @@
+import { useState, useContext } from 'react'
 import { Link } from 'react-router-dom'
-import LanguageSwitcher from '../LanguageSwitcher'
 import logo from '../assets/logo-Arsham.png'
-// مطمئن شو لوگو رو اینجا ذخیره کردی
+import { LanguageContext } from '../context/LanguageContext'
 
 export default function Header() {
+  const { setLang } = useContext(LanguageContext)
+  const [open, setOpen] = useState(false)
+
   return (
     <header className="bg-white shadow-md p-4 flex flex-col md:flex-row justify-between items-center">
-      {/* سوییچر زبان در سمت راست */}
-      <div className="order-3 md:order-1">
-        <LanguageSwitcher />
+      {/* لوگو در سمت چپ */}
+      <div className="order-1 md:order-3 flex items-center gap-2">
+        <img
+          src={logo}
+          alt="Arsham Logo"
+          className="w-20 h-20"
+          style={{ imageRendering: 'pixelated' }}
+        />
+        <Link to="/" className="text-2xl font-bold text-blue-700">Arshamai</Link>
       </div>
 
-      {/* منوی راست‌چین در وسط */}
+      {/* منوی وسط */}
       <nav className="order-2 flex gap-6 mt-4 md:mt-0 text-gray-700 text-lg font-medium flex-wrap justify-center md:justify-end rtl">
         <Link to="/contact">تماس</Link>
         <Link to="/about">درباره</Link>
@@ -20,15 +29,37 @@ export default function Header() {
         <Link to="/">خانه</Link>
       </nav>
 
-      {/* لوگو در سمت چپ */}
-      <div className="order-1 md:order-3 flex items-center gap-2">
-        <img
-  src={logo}
-  alt="Arsham Logo"
-  className="w-40 h-40" // سایز با Tailwind
-  style={{ imageRendering: 'pixelated' }} // افکت پیکسلی با CSS
-/>
-        <Link to="/" className="text-2xl font-bold text-blue-700"></Link>
+      {/* سوییچر زبان در سمت راست */}
+      <div className="order-3 md:order-1 relative mt-4 md:mt-0">
+        <button
+          onClick={() => setOpen(!open)}
+          className="bg-gray-200 px-3 py-1 rounded hover:bg-gray-300"
+        >
+          زبان
+        </button>
+
+        {open && (
+          <ul className="absolute right-0 mt-2 bg-white border rounded shadow-md text-sm z-50">
+            <li
+              className="px-4 py-2 hover:bg-gray-100 cursor-pointer"
+              onClick={() => { setLang('fa'); setOpen(false) }}
+            >
+              فارسی
+            </li>
+            <li
+              className="px-4 py-2 hover:bg-gray-100 cursor-pointer"
+              onClick={() => { setLang('en'); setOpen(false) }}
+            >
+              English
+            </li>
+            <li
+              className="px-4 py-2 hover:bg-gray-100 cursor-pointer"
+              onClick={() => { setLang('de'); setOpen(false) }}
+            >
+              Deutsch
+            </li>
+          </ul>
+        )}
       </div>
     </header>
   )
