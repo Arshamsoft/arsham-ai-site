@@ -1,6 +1,7 @@
 import { useState, useEffect, useContext } from 'react'
 import { LanguageContext } from '../context/LanguageContext'
-import { translateText } from '../utils/translate'
+import { translateText } from '../utils/translateText'
+
 
 export default function Contact() {
   const { lang } = useContext(LanguageContext)

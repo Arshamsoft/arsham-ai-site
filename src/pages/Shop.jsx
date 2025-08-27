@@ -1,6 +1,7 @@
 import { useState, useEffect, useContext } from 'react'
 import { LanguageContext } from '../context/LanguageContext'
-import { translateText } from '../utils/translate'
+import { translateText } from '../utils/translateText'
+
 
 const originalServices = [
   { title: 'طراحی سایت اختصاصی', price: '۵۰۰ یورو', desc: 'طراحی ریسپانسیو با UI/UX حرفه‌ای' },

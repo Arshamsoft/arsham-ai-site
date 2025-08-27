@@ -4,7 +4,7 @@ import image2 from '../assets/slider2.jpg'
 import image3 from '../assets/slider1.jpg'
 import image4 from '../assets/slider2.jpg'
 import image5 from '../assets/slider1.jpg'
-import { translateText } from '../utils/translate'
+import { translateText } from '../utils/translateText'
 import { LanguageContext } from '../context/LanguageContext'
 
 const images = [image1, image2, image3, image4, image5]
@@ -45,10 +45,21 @@ const projects = [
 export default function Home() {
   const [current, setCurrent] = useState(0)
   const [translated, setTranslated] = useState('')
+  const [loading, setLoading] = useState(true)
   const { lang } = useContext(LanguageContext)
 
   useEffect(() => {
-    translateText('به Arshamai خوش آمدید!', lang).then(setTranslated)
+    setLoading(true)
+    translateText('به Arshamai خوش آمدید!', lang)
+      .then((result) => {
+        setTranslated(result)
+        setLoading(false)
+      })
+      .catch((err) => {
+        console.error('ترجمه شکست خورد:', err)
+        setTranslated('به Arshamai خوش آمدید!')
+        setLoading(false)
+      })
   }, [lang])
 
   useEffect(() => {
@@ -61,12 +72,16 @@ export default function Home() {
   return (
     <div className="flex flex-col items-center justify-center min-h-screen bg-gray-100 px-4">
       {/* عنوان سایت */}
-      <h1 className="text-4xl font-bold text-blue-700 mb-6"></h1>
+    
 
       {/* متن ترجمه‌شده */}
       <div className="text-center mt-10 mb-10">
-        <h1 className="text-3xl font-bold text-blue-700">{translated || 'در حال ترجمه...'}</h1>
-        <p className="text-lg text-gray-700 mt-2">{translated || 'در حال ترجمه...'}</p>
+        <h1 className="text-3xl font-bold text-blue-700">
+          {loading ? '...' : translated}
+        </h1>
+        <p className="text-lg text-gray-700 mt-2">
+          {loading ? '...' : translated}
+        </p>
       </div>
 
       {/* اسلایدر با افکت زیبا */}
@@ -85,7 +100,6 @@ export default function Home() {
 
       {/* کارت‌های زیر اسلایدر */}
       <div className="mt-16 grid grid-cols-1 md:grid-cols-2 gap-6 max-w-4xl w-full">
-        {/* کارت اول */}
         <div className="bg-white rounded-xl shadow-lg p-6">
           <p className="text-gray-700 text-lg leading-relaxed">
             برنامه‌نویسی برای کسب‌وکارهایی مثل فروشگاه‌های آنلاین، شرکت‌های خدماتی، آموزشگاه‌ها و استارتاپ‌ها یه ابزار قدرتمنده.  
@@ -93,7 +107,6 @@ export default function Home() {
           </p>
         </div>
 
-        {/* کارت دوم */}
         <div className="bg-white rounded-xl shadow-lg p-6 flex items-center justify-center">
           <p className="text-gray-700 text-lg leading-relaxed text-center">
             با Arshamai، آینده‌ی دیجیتال کسب‌وکار خودت رو بساز.  
