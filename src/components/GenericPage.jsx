@@ -2,10 +2,15 @@ import { useState, useEffect, useContext } from 'react';
 import { LanguageContext } from '../context/LanguageContext';
 import { translateText } from '../utils/translateText';
 import { pages } from '../pagesConfig';
+import { useLocation } from 'react-router-dom';
 
-export default function Shop() {
+export default function GenericPage() {
   const { lang } = useContext(LanguageContext);
-  const page = pages.find((p) => p.path === '/shop') || { name: 'Shop', fields: {} };
+  const location = useLocation();
+  const page = pages.find((p) => p.path === location.pathname) || {
+    name: 'Unknown',
+    fields: {},
+  };
   const [translatedContent, setTranslatedContent] = useState({});
   const [translatedCards, setTranslatedCards] = useState([]);
   const [translatedContainers, setTranslatedContainers] = useState([]);

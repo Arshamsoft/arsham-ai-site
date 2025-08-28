@@ -1,13 +1,14 @@
-import { useState, useEffect, useContext } from 'react'
-import image1 from '../assets/slider1.jpg'
-import image2 from '../assets/slider2.jpg'
-import image3 from '../assets/slider1.jpg'
-import image4 from '../assets/slider2.jpg'
-import image5 from '../assets/slider1.jpg'
-import { translateText } from '../utils/translateText'
-import { LanguageContext } from '../context/LanguageContext'
+import { useState, useEffect, useContext } from 'react';
+import image1 from '../assets/slider1.jpg';
+import image2 from '../assets/slider2.jpg';
+import image3 from '../assets/slider1.jpg';
+import image4 from '../assets/slider2.jpg';
+import image5 from '../assets/slider1.jpg';
+import { translateText } from '../utils/translateText';
+import { LanguageContext } from '../context/LanguageContext';
+import GenericPage from '../components/GenericPage';
 
-const images = [image1, image2, image3, image4, image5]
+const images = [image1, image2, image3, image4, image5];
 
 const projects = [
   {
@@ -40,41 +41,56 @@ const projects = [
     desc: 'پلتفرم آموزشی با ویدیو و آزمون آنلاین',
     link: '#',
   },
-]
+];
 
 export default function Home() {
-  const [current, setCurrent] = useState(0)
-  const [translated, setTranslated] = useState('')
-  const [loading, setLoading] = useState(true)
-  const { lang } = useContext(LanguageContext)
+  
+  const [current, setCurrent] = useState(0);
+  const [translated, setTranslated] = useState('');
+  const [loading, setLoading] = useState(true);
+  const [pageContent, setPageContent] = useState({
+    card1: 'برنامه‌نویسی برای کسب‌وکارهایی مثل فروشگاه‌های آنلاین، شرکت‌های خدماتی، آموزشگاه‌ها و استارتاپ‌ها یه ابزار قدرتمنده. با طراحی نرم‌افزار اختصاصی و اتوماسیون، می‌تونی سرعت، دقت و درآمدت رو چند برابر کنی.',
+    card2: 'با Arshamai، آینده‌ی دیجیتال کسب‌وکار خودت رو بساز. طراحی سریع، ترجمه هوشمند، و تجربه کاربری بی‌نقص.',
+  });
+  const { lang } = useContext(LanguageContext);
 
   useEffect(() => {
-    setLoading(true)
+    // لود محتوای ذخیره‌شده از localStorage
+    const savedContent = localStorage.getItem('pageContent_Home');
+    if (savedContent) {
+      try {
+        const parsedContent = JSON.parse(savedContent);
+        setPageContent((prev) => ({ ...prev, ...parsedContent }));
+      } catch (err) {
+        console.error('خطا در لود محتوای Home:', err);
+      }
+    }
+  }, []);
+
+  useEffect(() => {
+    setLoading(true);
     translateText('به Arshamai خوش آمدید!', lang)
       .then((result) => {
-        setTranslated(result)
-        setLoading(false)
+        setTranslated(result);
+        setLoading(false);
       })
       .catch((err) => {
-        console.error('ترجمه شکست خورد:', err)
-        setTranslated('به Arshamai خوش آمدید!')
-        setLoading(false)
-      })
-  }, [lang])
+        console.error('ترجمه شکست خورد:', err);
+        setTranslated('');
+        setLoading(false);
+      });
+  }, [lang]);
 
   useEffect(() => {
     const interval = setInterval(() => {
-      setCurrent((prev) => (prev + 1) % images.length)
-    }, 10000)
-    return () => clearInterval(interval)
-  }, [])
+      setCurrent((prev) => (prev + 1) % images.length);
+    }, 10000);
+    return () => clearInterval(interval);
+  }, []);
 
   return (
     <div className="flex flex-col items-center justify-center min-h-screen bg-gray-100 px-4">
       {/* عنوان سایت */}
-    
-
-      {/* متن ترجمه‌شده */}
       <div className="text-center mt-10 mb-10">
         <h1 className="text-3xl font-bold text-blue-700">
           {loading ? '...' : translated}
@@ -102,15 +118,13 @@ export default function Home() {
       <div className="mt-16 grid grid-cols-1 md:grid-cols-2 gap-6 max-w-4xl w-full">
         <div className="bg-white rounded-xl shadow-lg p-6">
           <p className="text-gray-700 text-lg leading-relaxed">
-            برنامه‌نویسی برای کسب‌وکارهایی مثل فروشگاه‌های آنلاین، شرکت‌های خدماتی، آموزشگاه‌ها و استارتاپ‌ها یه ابزار قدرتمنده.  
-            با طراحی نرم‌افزار اختصاصی و اتوماسیون، می‌تونی سرعت، دقت و درآمدت رو چند برابر کنی.
+            {pageContent.card1}
           </p>
         </div>
 
         <div className="bg-white rounded-xl shadow-lg p-6 flex items-center justify-center">
           <p className="text-gray-700 text-lg leading-relaxed text-center">
-            با Arshamai، آینده‌ی دیجیتال کسب‌وکار خودت رو بساز.  
-            طراحی سریع، ترجمه هوشمند، و تجربه کاربری بی‌نقص.
+            {pageContent.card2}
           </p>
         </div>
       </div>
@@ -142,5 +156,6 @@ export default function Home() {
         </div>
       </div>
     </div>
-  )
+  );
+  return <GenericPage />;
 }
