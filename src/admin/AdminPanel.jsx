@@ -1,31 +1,25 @@
-import { Outlet, Navigate } from 'react-router-dom';
-import Sidebar from './components/Sidebar';
-import Navbar from './components/Navbar';
-
-// دیباگ برای چک کردن importها
-console.log('AdminPanel.jsx: Imported components', {
-  Sidebar: !!Sidebar,
-  Navbar: !!Navbar,
-});
+import { Outlet, Navigate } from "react-router-dom"
+import Sidebar from "./components/Sidebar"
+import Navbar from "./components/Navbar"
 
 const AdminPanel = () => {
-  const isLoggedIn = localStorage.getItem('isAdminLoggedIn') === 'true';
-  console.log('AdminPanel: isLoggedIn=', isLoggedIn);
+  const isLoggedIn = localStorage.getItem("isAdminLoggedIn") === "true"
 
   if (!isLoggedIn) {
-    console.log('AdminPanel: Redirecting to /admin/login');
-    return <Navigate to="/admin/login" replace />;
+    return <Navigate to="/admin/login" replace />
   }
 
   return (
-    <div className="flex">
+    <div className="flex min-h-screen bg-background">
       <Sidebar />
-      <div className="flex-1">
+      <div className="flex-1 flex flex-col">
         <Navbar />
-        <Outlet />
+        <main className="flex-1 overflow-auto">
+          <Outlet />
+        </main>
       </div>
     </div>
-  );
-};
+  )
+}
 
-export default AdminPanel;
+export default AdminPanel
