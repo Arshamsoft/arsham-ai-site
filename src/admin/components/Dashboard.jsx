@@ -2,7 +2,15 @@
 
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { createClient } from "../components/supabase/client"
+
+import { createClient } from '../../lib/client.ts';
+
+
+
+
+
+
+
 
 
 
