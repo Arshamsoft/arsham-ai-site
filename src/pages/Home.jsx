@@ -101,7 +101,7 @@ export default function Home() {
       </div>
 
       {/* اسلایدر با افکت زیبا */}
-      <div className="relative w-full max-w-xl h-64 overflow-hidden rounded-lg shadow-md">
+      <div className="relative w-full max-w-[1000px] h-[400px] overflow-hidden rounded-lg shadow-md">
         {images.map((img, index) => (
           <img
             key={index}
