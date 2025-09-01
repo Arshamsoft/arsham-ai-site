@@ -69,7 +69,7 @@ export default function Home() {
 
   useEffect(() => {
     setLoading(true);
-    translateText('به Arshamai خوش آمدید!', lang)
+    translateText('  خوش آمدید Arshamai  به  ', lang)
       .then((result) => {
         setTranslated(result);
         setLoading(false);
