@@ -22,7 +22,7 @@ const projects = [
   },
 
   {
-    title: 'سایت نمونه‌کار Arshamai',
+    title: 'سایت های طراحی شده',
     desc: 'سایت شخصی چندزبانه با React و Tailwind',
     link: 'https://arshamai.com',
   },
@@ -30,18 +30,18 @@ const projects = [
 
 const projects2 = [
   {
-    title: 'اپلیکیشن مترجم فوری',
-    desc: 'ترجمه متن با LibreTranslate و رابط کاربری ساده',
+    title: '  ',
+    desc: ' ',
     link: '#',
   },
   {
-    title: 'پنل مدیریت مشتریان',
-    desc: 'داشبورد تحت وب برای مدیریت کاربران و سفارش‌ها',
+    title: '  ',
+    desc: '',
     link: '#',
   },
   {
-    title: 'سایت آموزش برنامه‌نویسی',
-    desc: 'پلتفرم آموزشی با ویدیو و آزمون آنلاین',
+    title: '  ',
+    desc: '',
     link: '#',
   },
 ];
@@ -52,8 +52,8 @@ export default function Home() {
   const [translated, setTranslated] = useState('');
   const [loading, setLoading] = useState(true);
   const [pageContent, setPageContent] = useState({
-    card1: 'برنامه‌نویسی برای کسب‌وکارهایی مثل فروشگاه‌های آنلاین، شرکت‌های خدماتی، آموزشگاه‌ها و استارتاپ‌ها یه ابزار قدرتمنده. با طراحی نرم‌افزار اختصاصی و اتوماسیون، می‌تونی سرعت، دقت و درآمدت رو چند برابر کنی.',
-    card2: 'با Arshamai، آینده‌ی دیجیتال کسب‌وکار خودت رو بساز. طراحی سریع، ترجمه هوشمند، و تجربه کاربری بی‌نقص.',
+    card1: 'برنامه‌نویسی برای کسب‌ وکارهایی مثل فروشگاه‌های آنلاین، شرکت‌های خدماتی، آموزشگاه‌ها و استارتاپ‌ها یه ابزار قدرتمنده. با طراحی نرم‌ افزار اختصاصی و اتوماسیون، می‌تونی سرعت، دقت و درآمدت رو چند برابر کنی.',
+    card2: ' با آرشام، آینده‌ی دیجیتال کسب‌وکار خودت رو بساز. طراحی سریع، ترجمه هوشمند، و تجربه کاربری بی‌نقص',
   });
   const { lang } = useContext(LanguageContext);
 
@@ -106,9 +106,9 @@ export default function Home() {
         <h1 className="text-3xl font-bold text-blue-700">
           {loading ? '...' : translated}
         </h1>
-        <p className="text-lg text-gray-700 mt-2">
+        {/* <p className="text-lg text-gray-700 mt-2">
           {loading ? '...' : translated}
-        </p>
+        </p> */}
       </div>
 
       {/* اسلایدر با افکت زیبا */}

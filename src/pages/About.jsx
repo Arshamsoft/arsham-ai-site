@@ -2,59 +2,22 @@ import { useState, useEffect, useContext } from 'react';
 import { LanguageContext } from '../context/LanguageContext';
 import { translateText } from '../utils/translateText';
 import { pages } from '../pagesConfig';
+import aboutImage from '../assets/8.png'; // تصویر کنار متن
 
 export default function About() {
   const { lang } = useContext(LanguageContext);
   const page = pages.find((p) => p.path === '/about') || { name: 'About', fields: {} };
-  const [translatedContent, setTranslatedContent] = useState({});
   const [translatedCards, setTranslatedCards] = useState([]);
   const [translatedContainers, setTranslatedContainers] = useState([]);
-  const [pageContent, setPageContent] = useState({
-    ...Object.keys(page.fields).reduce((acc, key) => {
-      acc[key] = page.fields[key].default;
-      return acc;
-    }, {}),
-    cards: [],
-    containers: [],
-  });
 
-  useEffect(() => {
-    const savedContent = localStorage.getItem(`pageContent_${page.name}`);
-    if (savedContent) {
-      try {
-        const parsedContent = JSON.parse(savedContent);
-        setPageContent((prev) => ({
-          ...prev,
-          ...parsedContent,
-          cards: parsedContent.cards || [],
-          containers: parsedContent.containers || [],
-        }));
-      } catch (err) {
-        console.error(`خطا در لود محتوای ${page.name}:`, err);
-      }
-    }
-  }, [page.name]);
+  const pageContent = {
+    description: "شش سال تجربه در زمینه برنامه نویسی و انجام پروژه های مختلف چه بک اند و چه فرانت اند و تسلط به بیش از 12 زبان برنامه نویسی",
+    cards: page.fields.cards || [],
+    containers: page.fields.containers || [],
+  };
 
   useEffect(() => {
     const translateAll = async () => {
-      const translated = {};
-      for (const key of Object.keys(page.fields)) {
-        if (page.fields[key].type === 'array') {
-          translated[key] = await Promise.all(
-            (pageContent[key] || page.fields[key].default).map(async (item) => {
-              const translatedItem = {};
-              for (const subKey of Object.keys(page.fields[key].subfields || {})) {
-                translatedItem[subKey] = await translateText(item[subKey] || page.fields[key].subfields[subKey].default, lang);
-              }
-              return translatedItem;
-            })
-          );
-        } else {
-          translated[key] = await translateText(pageContent[key] || page.fields[key].default, lang);
-        }
-      }
-      setTranslatedContent(translated);
-
       const translatedCrds = await Promise.all(
         (pageContent.cards || []).map(async (c) => {
           const title = await translateText(c.title || '', lang);
@@ -75,70 +38,60 @@ export default function About() {
     };
 
     translateAll();
-  }, [lang, pageContent, page]);
+  }, [lang, pageContent]);
 
   return (
-    <div className="max-w-4xl mx-auto p-8">
-      <h2 className="text-3xl font-bold mb-6 text-blue-700">
-        {lang === 'fa' ? page.name : lang === 'en' ? page.name : page.name}
-      </h2>
+    <div className="max-w-6xl mx-auto p-8 space-y-12">
+      {/* عنوان صفحه */}
+      <h2 className="text-4xl font-bold text-center text-blue-700">{page.name}</h2>
 
-      {Object.keys(page.fields).map((key) => (
-        <div key={key} className="mb-6">
-          {page.fields[key].type === 'array' ? (
-            <div className="grid md:grid-cols-2 gap-6">
-              {(translatedContent[key] || []).map((item, index) => (
-                <div key={`${key}-${index}`} className="border p-6 rounded shadow hover:shadow-lg transition">
-                  {Object.keys(page.fields[key].subfields || {}).map((subKey) => (
-                    <div key={subKey}>
-                      {page.fields[key].subfields[subKey]?.type === 'textarea' ? (
-                        <p className="text-gray-700 mb-2">{item[subKey]}</p>
-                      ) : (
-                        <p className={subKey === 'title' ? 'text-xl font-semibold mb-2' : 'text-blue-600 font-bold'}>
-                          {item[subKey]}
-                        </p>
-                      )}
-                    </div>
-                  ))}
-                </div>
-              ))}
-            </div>
-          ) : (
-            <div>
-              <p className={page.fields[key].type === 'textarea' ? 'text-gray-700 leading-relaxed whitespace-pre-line' : 'text-gray-700'}>
-                {translatedContent[key] || 'در حال ترجمه...'}
-              </p>
-            </div>
-          )}
+      {/* متن + تصویر کنار هم */}
+      <div className="flex flex-col md:flex-row items-center gap-8 bg-white shadow-lg rounded-lg p-6 transition hover:shadow-2xl">
+        <div className="md:w-1/2">
+          <p className="text-gray-700 text-lg leading-relaxed whitespace-pre-line">
+            {pageContent.description}
+          </p>
         </div>
-      ))}
-
-      <div className="mt-8 grid grid-cols-1 md:grid-cols-2 gap-6">
-        {translatedCards.length > 0 && translatedCards.map((card, index) => (
-          <div key={`card-${index}`} className="bg-white p-6 rounded-lg shadow-md">
-            <h3 className="text-lg font-semibold mb-2">{card.title || 'عنوان کارت'}</h3>
-            {card.type === 'image' && card.src ? (
-              <img src={card.src} alt={card.title} className="w-full h-auto rounded mb-2" />
-            ) : card.type === 'video' && card.src ? (
-              <video controls className="w-full h-auto rounded mb-2">
-                <source src={card.src} type="video/mp4" />
-                مرورگر شما از ویدیو پشتیبانی نمی‌کند.
-              </video>
-            ) : (
-              <p className="text-gray-700">{card.desc || 'توضیحات کارت'}</p>
-            )}
-          </div>
-        ))}
+        <div className="md:w-1/2 flex justify-center">
+          <img src={aboutImage} alt="About" className="rounded-lg shadow-md w-full max-w-sm transform transition duration-300 hover:scale-105" />
+        </div>
       </div>
 
-      <div className="mt-8">
-        {translatedContainers.length > 0 && translatedContainers.map((container, index) => (
-          <div key={`container-${index}`} className="bg-white p-6 rounded-lg shadow-md mb-6">
-            <h3 className="text-xl font-semibold mb-2">{container.title || 'عنوان کانتینر'}</h3>
-            <p className="text-gray-700">{container.content || 'محتوای کانتینر'}</p>
-          </div>
-        ))}
-      </div>
+      {/* کارت‌ها */}
+      {translatedCards.length > 0 && (
+        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {translatedCards.map((card, index) => (
+            <div
+              key={`card-${index}`}
+              className="bg-white p-6 rounded-xl shadow-md hover:shadow-xl transition transform hover:-translate-y-2"
+            >
+              <h3 className="text-xl font-semibold mb-3 text-blue-600">{card.title}</h3>
+              {card.type === 'image' && card.src ? (
+                <img src={card.src} alt={card.title} className="w-full h-auto rounded mb-3" />
+              ) : card.type === 'video' && card.src ? (
+                <video controls className="w-full h-auto rounded mb-3">
+                  <source src={card.src} type="video/mp4" />
+                  مرورگر شما از ویدیو پشتیبانی نمی‌کند.
+                </video>
+              ) : (
+                <p className="text-gray-700">{card.desc}</p>
+              )}
+            </div>
+          ))}
+        </div>
+      )}
+
+      {/* کانتینرها */}
+      {translatedContainers.length > 0 && (
+        <div className="space-y-6">
+          {translatedContainers.map((container, index) => (
+            <div key={`container-${index}`} className="bg-white p-6 rounded-lg shadow-md hover:shadow-lg transition">
+              <h3 className="text-2xl font-semibold mb-3 text-blue-600">{container.title}</h3>
+              <p className="text-gray-700">{container.content}</p>
+            </div>
+          ))}
+        </div>
+      )}
     </div>
   );
 }

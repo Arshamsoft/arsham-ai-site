@@ -58,7 +58,7 @@ export default function Footer() {
 
         {/* ستون ۳: شرکت */}
         <div className="text-right">
-  <h3 className="text-lg font-semibold mb-4">شرکت</h3>
+  <h3 className="text-lg font-semibold mb-4">آرشام سافت</h3>
   <ul className="text-sm border-t border-gray-300">
     <li className="border-b border-gray-150 py-2">
       <a href="#" className="hover:underline">وبلاگ</a>
@@ -73,16 +73,7 @@ export default function Footer() {
       <a href="#" className="hover:underline">درباره ما</a>
     </li>
     <li className="border-b border-gray-150 py-2">
-      <a href="#" className="hover:underline">ما چگونه کار می‌کنیم</a>
-    </li>
-    <li className="border-b border-gray-150 py-2">
-      <a href="#" className="hover:underline">مشاوره مالی</a>
-    </li>
-    <li className="border-b border-gray-150 py-2">
       <a href="#" className="hover:underline">فروشگاه</a>
-    </li>
-    <li className="py-2">
-      <a href="#" className="hover:underline">مشاغل جهانی</a>
     </li>
   </ul>
 </div>
@@ -93,28 +84,31 @@ export default function Footer() {
   <h3 className="text-lg font-semibold mb-4">خدمات</h3>
   <ul className="text-sm border-t border-gray-200">
     <li className="border-b border-gray-150 py-2 pr-2">
-      <a href="#" className="hover:underline">وبلاگ</a>
+      <a href="#" className="hover:underline">ساخت اپلیکیشن اندروید</a>
     </li>
     <li className="border-b border-gray-150 py-2 pr-2">
-      <a href="#" className="hover:underline">ارتباط با ما</a>
+      <a href="#" className="hover:underline">طراحی سایت</a>
     </li>
     <li className="border-b border-gray-150 py-2 pr-2">
-      <a href="#" className="hover:underline">خانه</a>
+      <a href="#" className="hover:underline">ساخت اپلیکیشن PWA</a>
     </li>
     <li className="border-b border-gray-150 py-2 pr-2">
-      <a href="#" className="hover:underline">درباره ما</a>
+      <a href="#" className="hover:underline"> ساخت مدل هوش مصنوعی</a>
     </li>
     <li className="border-b border-gray-150 py-2 pr-1">
-      <a href="#" className="hover:underline">ما چگونه کار می‌کنیم</a>
+      <a href="#" className="hover:underline"> ساخت انواع ربات تلگرامی </a>
     </li>
     <li className="border-b border-gray-150 py-2 pr-2">
-      <a href="#" className="hover:underline">مشاوره مالی</a>
+      <a href="#" className="hover:underline"> انجام پروژه ای دانشگاهی</a>
     </li>
     <li className="border-b border-gray-150 py-2 pr-2">
-      <a href="#" className="hover:underline">فروشگاه</a>
+      <a href="#" className="hover:underline">ساخت اپلیکیشن های ویندوزی</a>
+    </li>
+    <li className="border-b border-gray-150 py-2 pr-2">
+      <a href="#" className="hover:underline"> راه اندازی شبکه</a>
     </li>
     <li className="py-2 pr-2">
-      <a href="#" className="hover:underline">مشاغل جهانی</a>
+      <a href="#" className="hover:underline">   پشتیبانی</a>
     </li>
   </ul>
 </div>
@@ -124,13 +118,11 @@ export default function Footer() {
 
         {/* ستون ۴: درباره شرکت (نام شرکت) */}
         <div className="text-right">
-          <h2 className="text-xl font-bold mb-4">نام شرکت</h2>
+          <h2 className="text-xl font-bold mb-4">آرشام سافت </h2>
           <p className="text-sm leading-6 mb-4">
-            لورم ایپسوم متن ساختگی با تولید سادگی نامفهوم از صنعت چاپ و با استفاده از طراحان گرافیک است.
+           طراحی ، ساخت ، اجرا و پشتیبانی انواع نرم افزار ها از صفر تا صد
           </p>
-          <a href="#" className="text-sm hover:underline">
-            درباره‌ی ما
-          </a>
+         
         </div>
       </div>
 
