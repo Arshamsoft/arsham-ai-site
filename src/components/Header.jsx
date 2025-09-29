@@ -10,7 +10,7 @@ import {
   FaShoppingCart,
   FaSearch,
 } from "react-icons/fa";
-import logo from "../assets/logo-Arsham.png";
+import logo from "../assets/logo.png";
 import DarkModeToggle from "./DarkModeToggle"; // مسیر درست
 
 export default function Header() {
