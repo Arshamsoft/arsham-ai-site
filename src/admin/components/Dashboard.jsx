@@ -13,7 +13,10 @@ import { createClient } from '../../lib/client.ts';
 
 
 
-
+const handleEdit = (id) => {
+  console.log("ویرایش آیتم با شناسه:", id);
+  // اینجا کد ویرایش رو بنویس
+};
 
 // Custom SVG icons
 const FileTextIcon = () => (
@@ -152,6 +155,14 @@ const Dashboard = () => {
         .select("title, created_at, profiles(full_name)")
         .order("created_at", { ascending: false })
         .limit(3)
+
+
+        const  handleEdit = ( )=>{
+
+    console.log('edit ')
+
+
+        }
 
       const { data: recentComments } = await supabase
         .from("comments")
@@ -316,7 +327,7 @@ const Dashboard = () => {
               <p className="text-2xl font-bold text-card-foreground mt-1">{stats.totalPosts}</p>
               <p className="text-xs text-muted-foreground mt-1">مجموع نوشته‌ها</p>
             </div>
-            <div className="w-12 h-12 bg-accent/10 rounded-lg flex items-center justify-center">
+            <div className="w-12 h-12 bg-accent/10 rounded-lg flex items-center justify-center" onClick={handleEdit}>
               <EditIcon className="text-accent" size={24} />
             </div>
           </div>

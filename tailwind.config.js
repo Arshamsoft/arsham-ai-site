@@ -4,4 +4,10 @@ module.exports = {
     extend: {},
   },
   plugins: [],
+
+   darkMode: "class", // یا "media" اگه بخوای براساس تنظیمات سیستم کاربر باشه
+  theme: {
+    extend: {},
+  },
+  plugins: [],
 }

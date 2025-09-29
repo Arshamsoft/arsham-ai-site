@@ -11,6 +11,7 @@ import Dashboard from './admin/components/Dashboard';
 import PageManager from './admin/components/PageManager';
 import Header from './components/Header';
 import Footer from './components/Footer';
+import AndroidApp from "./pages/AndroidApp"; // مسیر صفحه رو درست بذار
 
 console.log('App.js: Imported components', {
   Home: !!Home,
@@ -45,12 +46,14 @@ function App() {
           <Route path="/shop" element={<Shop />} />
           <Route path="/about" element={<About />} />
           <Route path="/contact" element={<Contact />} />
+          <Route path="/android" element={<AndroidApp />} />
         </Route>
         <Route path="/admin/login" element={<AdminLogin />} />
         <Route path="/admin" element={<AdminPanel />}>
           <Route index element={<Dashboard />} />
           <Route path="dashboard" element={<Dashboard />} />
           <Route path="pages" element={<PageManager />} />
+          
         </Route>
       </Routes>
     </LanguageProvider>

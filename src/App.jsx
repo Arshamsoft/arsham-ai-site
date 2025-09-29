@@ -9,6 +9,7 @@ import Dashboard from './admin/components/Dashboard';
 import PageManager from './admin/components/PageManager';
 import EditPost from './admin/components/EditPost';
 import { pages } from './pagesConfig';
+import AndroidApp from "./pages/AndroidApp"; // مسیر صفحه رو درست بذار
 
 function App() {
   return (
@@ -25,6 +26,7 @@ function App() {
           <Route path="dashboard" element={<Dashboard />} />
           <Route path="pages" element={<PageManager />} />
           <Route path="edit/:id" element={<EditPost />} />
+          <Route path="/android" element={<AndroidApp />} />
         </Route>
       </Routes>
       <Footer />
