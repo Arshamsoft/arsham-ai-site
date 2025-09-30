@@ -6,11 +6,12 @@ export default function DarkModeToggle() {
   );
 
   useEffect(() => {
+    const html = document.documentElement;
     if (dark) {
-      document.documentElement.classList.add("dark");
+      html.classList.add("dark");
       localStorage.setItem("theme", "dark");
     } else {
-      document.documentElement.classList.remove("dark");
+      html.classList.remove("dark");
       localStorage.setItem("theme", "light");
     }
   }, [dark]);
@@ -18,9 +19,9 @@ export default function DarkModeToggle() {
   return (
     <button
       onClick={() => setDark(!dark)}
-      className="px-4 py-2 rounded bg-gray-200 dark:bg-gray-800 dark:text-white transition"
+      className="ml-4 px-4 py-2 rounded bg-gray-200 dark:bg-gray-800 dark:text-white transition"
     >
-      {dark ? "☀️ حالت روشن" : "🌙 حالت تاریک"}
+      {dark ? "☀️ روشن" : "🌙 تاریک"}
     </button>
   );
 }

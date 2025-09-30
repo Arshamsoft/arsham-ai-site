@@ -15,7 +15,7 @@ export default function Contact() {
     emailPlaceholder: 'ایمیل',
     messagePlaceholder: 'پیام شما',
     buttonText: 'ارسال پیام',
-    cards: [], // آرایه کارت‌های اضافی (نامحدود)
+    cards: [],
   });
 
   useEffect(() => {
@@ -38,45 +38,48 @@ export default function Contact() {
       setMessagePlaceholder(await translateText(pageContent.messagePlaceholder, lang));
       setButtonText(await translateText(pageContent.buttonText, lang));
     };
-
     translateAll();
   }, [lang, pageContent]);
 
   return (
-    <div className="max-w-2xl mx-auto p-8">
-      <h2 className="text-3xl font-bold mb-6 text-blue-700">
+    <div className="min-h-screen p-8 bg-gray-100 dark:bg-gray-900 flex flex-col items-center">
+      <h2 className="text-3xl font-bold mb-8 text-blue-700 dark:text-blue-400 text-center">
         {title || 'در حال ترجمه...'}
       </h2>
 
-      <form className="space-y-4">
+      <form className="w-full max-w-3xl space-y-4">
         <input
           type="text"
           placeholder={namePlaceholder || '...'}
-          className="w-full p-3 border rounded"
+          className="w-full p-3 border rounded-xl shadow-lg dark:bg-gray-800 dark:text-gray-200 dark:border-gray-700 focus:ring-2 focus:ring-blue-300"
         />
         <input
           type="email"
           placeholder={emailPlaceholder || '...'}
-          className="w-full p-3 border rounded"
+          className="w-full p-3 border rounded-xl shadow-lg dark:bg-gray-800 dark:text-gray-200 dark:border-gray-700 focus:ring-2 focus:ring-blue-300"
         />
         <textarea
           placeholder={messagePlaceholder || '...'}
-          className="w-full p-3 border rounded h-32"
+          className="w-full p-3 border rounded-xl shadow-lg h-36 dark:bg-gray-800 dark:text-gray-200 dark:border-gray-700 focus:ring-2 focus:ring-blue-300"
         />
         <button
           type="submit"
-          className="bg-blue-600 text-white px-6 py-2 rounded hover:bg-blue-700"
+          className="bg-blue-600 text-white px-6 py-2 rounded-xl shadow-lg hover:bg-blue-700 dark:bg-blue-500 dark:hover:bg-blue-600 transition w-full md:w-auto"
         >
           {buttonText || '...'}
         </button>
       </form>
 
-      {/* کارت‌های اضافی (نامحدود) */}
-      <div className="mt-8 grid grid-cols-1 gap-6">
+      <div className="mt-12 w-full max-w-3xl grid grid-cols-1 gap-6">
         {pageContent.cards.map((card, index) => (
-          <div key={index} className="bg-white p-6 rounded-lg shadow-md">
-            <h3 className="text-lg font-semibold mb-2">{card.title || 'عنوان کارت'}</h3>
-            <p className="text-gray-700">{card.desc || 'توضیحات کارت'}</p>
+          <div
+            key={index}
+            className="bg-white dark:bg-gray-800 p-6 rounded-2xl shadow-2xl hover:shadow-3xl transition-all duration-300"
+          >
+            <h3 className="text-xl font-semibold mb-2 text-gray-800 dark:text-gray-100">
+              {card.title || 'عنوان کارت'}
+            </h3>
+            <p className="text-gray-700 dark:text-gray-300">{card.desc || 'توضیحات کارت'}</p>
           </div>
         ))}
       </div>

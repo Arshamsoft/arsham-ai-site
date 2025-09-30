@@ -8,8 +8,6 @@ import image7 from '../assets/YY2.png';
 import { translateText } from '../utils/translateText';
 import { LanguageContext } from '../context/LanguageContext';
 import GenericPage from '../components/GenericPage';
-import DarkModeToggle from "../components/DarkModeToggle";
-
 
 const images = [image1, image2, image3, image4, image5];
 
@@ -20,7 +18,6 @@ const projects = [
     link: '/android',
     image: image7 ,
   },
-
   {
     title: 'سایت های طراحی شده',
     desc: 'سایت شخصی چندزبانه با React و Tailwind',
@@ -29,25 +26,12 @@ const projects = [
 ];
 
 const projects2 = [
-  {
-    title: '  ',
-    desc: ' ',
-    link: '#',
-  },
-  {
-    title: '  ',
-    desc: '',
-    link: '#',
-  },
-  {
-    title: '  ',
-    desc: '',
-    link: '#',
-  },
+  { title: '  ', desc: ' ', link: '#' },
+  { title: '  ', desc: '', link: '#' },
+  { title: '  ', desc: '', link: '#' },
 ];
 
 export default function Home() {
-  
   const [current, setCurrent] = useState(0);
   const [translated, setTranslated] = useState('');
   const [loading, setLoading] = useState(true);
@@ -58,7 +42,6 @@ export default function Home() {
   const { lang } = useContext(LanguageContext);
 
   useEffect(() => {
-    // لود محتوای ذخیره‌شده از localStorage
     const savedContent = localStorage.getItem('pageContent_Home');
     if (savedContent) {
       try {
@@ -69,8 +52,6 @@ export default function Home() {
       }
     }
   }, []);
-
-  
 
   useEffect(() => {
     setLoading(true);
@@ -94,24 +75,15 @@ export default function Home() {
   }, []);
 
   return (
-<div
-  className="flex flex-col items-center justify-center min-h-screen px-4"
-  style={{
-    background: "linear-gradient(135deg, #e0eafc 0%, #cfdef3 100%)"
-  }}
->
-
-      {/* عنوان سایت */}
+    <div
+      className="flex flex-col items-center justify-center min-h-screen px-4 bg-gradient-to-br from-[#e0eafc] to-[#cfdef3] dark:from-gray-800 dark:to-gray-900"
+    >
       <div className="text-center mt-10 mb-10">
-        <h1 className="text-3xl font-bold text-blue-700">
+        <h1 className="text-3xl font-bold text-blue-700 dark:text-blue-400">
           {loading ? '...' : translated}
         </h1>
-        {/* <p className="text-lg text-gray-700 mt-2">
-          {loading ? '...' : translated}
-        </p> */}
       </div>
 
-      {/* اسلایدر با افکت زیبا */}
       <div className="relative w-full max-w-[1300px] h-[650px] overflow-hidden rounded-lg shadow-2xl">
         {images.map((img, index) => (
           <img
@@ -125,106 +97,90 @@ export default function Home() {
         ))}
       </div>
 
-      {/* کارت‌های زیر اسلایدر */}
       <div className="mt-16 grid grid-cols-1 md:grid-cols-2 gap-6 max-w-4xl w-full">
-        <div className="bg-white rounded-xl shadow-lg p-6">
-          <p className="text-gray-700 text-lg leading-relaxed">
+        <div className="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-6">
+          <p className="text-gray-700 dark:text-gray-200 text-lg leading-relaxed">
             {pageContent.card1}
           </p>
         </div>
 
-        <div className="bg-white rounded-xl shadow-lg p-6 flex items-center justify-center">
-          <p className="text-gray-700 text-lg leading-relaxed text-center">
+        <div className="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-6 flex items-center justify-center">
+          <p className="text-gray-700 dark:text-gray-200 text-lg leading-relaxed text-center">
             {pageContent.card2}
           </p>
         </div>
       </div>
 
-      {/* خط جداکننده */}
       <div className="w-full flex justify-center my-12">
-        <hr className="border-t-2 border-red-700 w-3/4" />
+        <hr className="border-t-2 border-red-700 dark:border-red-500 w-3/4" />
       </div>
 
-      {/* بخش پروژه‌ها */}
-<div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 gap-8">
-  {projects.map((p, i) => (
-    <a
-      key={i}
-      href={p.link}
-      target="_blank"
-      rel="noopener noreferrer"
-      className="block"
-    >
-      <div
-        className="bg-white rounded-xl shadow-lg p-6 hover:shadow-xl transition duration-400 flex flex-col sm:flex-row gap-6 cursor-pointer max-w-3xl mx-auto"
-
-      >
-        {/* تصویر */}
-        {p.image && (
-          <img
-            src={p.image} 
-            alt={p.title}
-            className="w-full sm:w-2/3 h-auto rounded-lg object-cover"
-          />
-        )}
-
-        {/* متن */}
-        <div className="flex flex-col justify-between sm:w-2/3">
-          <h3 className="text-xl font-semibold text-blue-600 mb-2">{p.title}</h3>
-          <p className="text-gray-700 text-sm leading-relaxed">{p.desc}</p>
-          <span className="mt-4 text-sm text-blue-500 hover:underline">
-            مشاهده پروژه →
-          </span>
-        </div>
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 gap-8">
+        {projects.map((p, i) => (
+          <a
+            key={i}
+            href={p.link}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="block"
+          >
+            <div
+              className="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-6 hover:shadow-xl transition duration-400 flex flex-col sm:flex-row gap-6 cursor-pointer max-w-3xl mx-auto"
+            >
+              {p.image && (
+                <img
+                  src={p.image} 
+                  alt={p.title}
+                  className="w-full sm:w-2/3 h-auto rounded-lg object-cover"
+                />
+              )}
+              <div className="flex flex-col justify-between sm:w-2/3">
+                <h3 className="text-xl font-semibold text-blue-600 dark:text-blue-400 mb-2">{p.title}</h3>
+                <p className="text-gray-700 dark:text-gray-200 text-sm leading-relaxed">{p.desc}</p>
+                <span className="mt-4 text-sm text-blue-500 dark:text-blue-300 hover:underline">
+                  مشاهده پروژه →
+                </span>
+              </div>
+            </div>
+          </a>
+        ))}
       </div>
-    </a>
-  ))}
-</div>
 
-   {/* خط جداکننده */}
       <div className="w-full flex justify-center my-12">
-        <hr className="border-t-2 border-red-700 w-3/4" />
+        <hr className="border-t-2 border-red-700 dark:border-red-500 w-3/4" />
       </div>
 
-
-<div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-2 gap-8">
-  {projects2.map((p, i) => (
-    <a
-      key={i}
-      href={p.link}
-      target="_blank"
-      rel="noopener noreferrer"
-      className="block"
-    >
-      <div
-        className="bg-white rounded-xl shadow-lg p-6 hover:shadow-xl transition duration-400 flex flex-col sm:flex-row gap-6 cursor-pointer max-w-3xl mx-auto"
-
-      >
-        {/* تصویر */}
-        {p.image && (
-          <img
-            src={p.image} 
-            alt={p.title}
-            className="w-full sm:w-2/3 h-auto rounded-lg object-cover"
-          />
-        )}
-
-        {/* متن */}
-        <div className="flex flex-col justify-between sm:w-2/3">
-          <h3 className="text-xl font-semibold text-blue-600 mb-2">{p.title}</h3>
-          <p className="text-gray-700 text-sm leading-relaxed">{p.desc}</p>
-          <span className="mt-4 text-sm text-blue-500 hover:underline">
-            مشاهده پروژه →
-          </span>
-        </div>
+      <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-2 gap-8">
+        {projects2.map((p, i) => (
+          <a
+            key={i}
+            href={p.link}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="block"
+          >
+            <div
+              className="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-6 hover:shadow-xl transition duration-400 flex flex-col sm:flex-row gap-6 cursor-pointer max-w-3xl mx-auto"
+            >
+              {p.image && (
+                <img
+                  src={p.image} 
+                  alt={p.title}
+                  className="w-full sm:w-2/3 h-auto rounded-lg object-cover"
+                />
+              )}
+              <div className="flex flex-col justify-between sm:w-2/3">
+                <h3 className="text-xl font-semibold text-blue-600 dark:text-blue-400 mb-2">{p.title}</h3>
+                <p className="text-gray-700 dark:text-gray-200 text-sm leading-relaxed">{p.desc}</p>
+                <span className="mt-4 text-sm text-blue-500 dark:text-blue-300 hover:underline">
+                  مشاهده پروژه →
+                </span>
+              </div>
+            </div>
+          </a>
+        ))}
       </div>
-    </a>
-  ))}
-</div>
-
-
 
     </div>
   );
-  return <GenericPage />;
 }
