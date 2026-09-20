@@ -1,36 +1,51 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import React from "react"; // برای React.Fragment
 import image1 from '../assets/YY.png';
 import image2 from '../assets/p2.png';
 import video1 from '../assets/v1.mp4';
+import api from '../lib/api';
+
+// مقدار اولیه کارت‌ها (تا وقتی داده از بک‌اند نیومده یا اگه اتصال قطع بود)
+const initialCards = [
+  {
+    title: "اپلیکیشن ScoreBoard",
+    desc: "یک اپلیکیشن بسیار کاربردی برای نمایش و ویرایش امتیاز مخصوص ورزشگاه ها، کاملا لوکال و پیشرفته. لطفا جهت خرید یا سفارش تماس بگیرید.",
+    image: image1,
+    video: video1,
+  },
+  {
+    title: "اپلیکیشن فروشگاهی کدبانو",
+    desc: "خرید راحت و بدون دردسر از سراسر کشور",
+    image: image2,
+  },
+  {
+    title: "اپلیکیشن آموزشی",
+    desc: "یادگیری مهارت‌ها با ویدیو",
+    image: "/assets/3.png",
+  },
+  {
+    title: "اپلیکیشن پزشکی",
+    desc: "نوبت‌دهی و مشاوره آنلاین",
+    image: "/assets/4.png",
+  },
+];
 
 export default function AndroidApp() {
-  // مقدار اولیه کارت‌ها
-  const initialCards = [
-    {
-      title: "اپلیکیشن ScoreBoard",
-      desc: "یک اپلیکیشن بسیار کاربردی برای نمایش و ویرایش امتیاز مخصوص ورزشگاه ها، کاملا لوکال و پیشرفته. لطفا جهت خرید یا سفارش تماس بگیرید.",
-      image: image1,
-      video: video1,
-    },
-    {
-      title: "اپلیکیشن فروشگاهی کدبانو",
-      desc: "خرید راحت و بدون دردسر از سراسر کشور",
-      image: image2,
-    },
-    {
-      title: "اپلیکیشن آموزشی",
-      desc: "یادگیری مهارت‌ها با ویدیو",
-      image: "/assets/3.png",
-    },
-    {
-      title: "اپلیکیشن پزشکی",
-      desc: "نوبت‌دهی و مشاوره آنلاین",
-      image: "/assets/4.png",
-    },
-  ];
+  const [cards, setCards] = useState(initialCards);
 
-  const [cards] = useState(initialCards);
+  useEffect(() => {
+    api.get('/portfolio').then((res) => {
+      const items = (res.data.data || res.data || []).filter((p) => p.category === 'اندروید');
+      if (items.length > 0) {
+        setCards(items.map((p) => ({
+          title: p.title,
+          desc: p.description,
+          image: p.image,
+          video: p.video,
+        })));
+      }
+    }).catch((err) => console.error('خطا در لود اپلیکیشن‌ها:', err));
+  }, []);
 
   return (
     <div className="flex flex-col min-h-screen bg-gray-50 dark:bg-gray-900">

@@ -1,6 +1,7 @@
 import { useState, useEffect, useContext } from 'react';
 import { LanguageContext } from '../context/LanguageContext';
 import { translateText } from '../utils/translateText';
+import api from '../lib/api';
 
 export default function Contact() {
   const { lang } = useContext(LanguageContext);
@@ -19,15 +20,11 @@ export default function Contact() {
   });
 
   useEffect(() => {
-    const savedContent = localStorage.getItem('pageContent_Contact');
-    if (savedContent) {
-      try {
-        const parsedContent = JSON.parse(savedContent);
-        setPageContent((prev) => ({ ...prev, ...parsedContent }));
-      } catch (err) {
-        console.error('خطا در لود محتوای Contact:', err);
+    api.get('/content').then((res) => {
+      if (res.data && res.data.contactInfo) {
+        setPageContent((prev) => ({ ...prev, ...res.data.contactInfo }));
       }
-    }
+    }).catch((err) => console.error('خطا در لود محتوای Contact:', err));
   }, []);
 
   useEffect(() => {

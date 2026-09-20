@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import {
   FaTwitter,
@@ -13,10 +13,29 @@ import {
   FaSun
 } from "react-icons/fa";
 import logo from "../assets/logo.png";
+import api from "../lib/api";
+
+const defaultLabels = {
+  about: "درباره ما",
+  contact: "تماس با ما",
+  blog: "وبلاگ",
+  services: "خدمات",
+  shop: "فروشگاه",
+  home: "خانه",
+};
 
 export default function Header() {
   const [search, setSearch] = useState("");
   const [darkMode, setDarkMode] = useState(false);
+  const [labels, setLabels] = useState(defaultLabels);
+
+  useEffect(() => {
+    api.get("/content").then((res) => {
+      if (res.data && res.data.header) {
+        setLabels((prev) => ({ ...prev, ...res.data.header }));
+      }
+    }).catch(() => {});
+  }, []);
 
   const toggleDarkMode = () => {
     setDarkMode(!darkMode);
@@ -74,12 +93,12 @@ export default function Header() {
       {/* منو */}
       <nav className="relative flex items-center justify-center px-6 py-2 bg-[#003366] dark:bg-gray-800 text-xs md:text-sm">
         <div className="flex gap-5 md:gap-8 text-white dark:text-gray-200">
-          <Link to="/about" className="hover:text-blue-400">درباره ما</Link>
-          <Link to="/contact" className="hover:text-blue-400">تماس با ما</Link>
-          <Link to="/blog" className="hover:text-blue-400">وبلاگ</Link>
-          <Link to="/services" className="hover:text-blue-400">خدمات</Link>
-          <Link to="/shop" className="hover:text-blue-400">فروشگاه</Link>
-          <Link to="/" className="text-red-400 font-bold hover:text-red-500">خانه</Link>
+          <Link to="/about" className="hover:text-blue-400">{labels.about}</Link>
+          <Link to="/contact" className="hover:text-blue-400">{labels.contact}</Link>
+          <Link to="/blog" className="hover:text-blue-400">{labels.blog}</Link>
+          <Link to="/services" className="hover:text-blue-400">{labels.services}</Link>
+          <Link to="/shop" className="hover:text-blue-400">{labels.shop}</Link>
+          <Link to="/" className="text-red-400 font-bold hover:text-red-500">{labels.home}</Link>
         </div>
 
         <div className="absolute left-6 flex items-center gap-3">

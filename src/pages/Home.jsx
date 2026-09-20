@@ -1,15 +1,8 @@
 import { useState, useEffect, useContext } from 'react';
-import image1 from '../assets/5.png';
-import image2 from '../assets/1.png';
-import image3 from '../assets/2.png';
-import image4 from '../assets/4.png';
-import image5 from '../assets/3.png';
 import image7 from '../assets/YY2.png';
 import { translateText } from '../utils/translateText';
 import { LanguageContext } from '../context/LanguageContext';
-import GenericPage from '../components/GenericPage';
-
-const images = [image1, image2, image3, image4, image5];
+import api from '../lib/api';
 
 const projects = [
   {
@@ -35,6 +28,7 @@ export default function Home() {
   const [current, setCurrent] = useState(0);
   const [translated, setTranslated] = useState('');
   const [loading, setLoading] = useState(true);
+  const [images, setImages] = useState([]);
   const [pageContent, setPageContent] = useState({
     card1: 'برنامه‌نویسی برای کسب‌ وکارهایی مثل فروشگاه‌های آنلاین، شرکت‌های خدماتی، آموزشگاه‌ها و استارتاپ‌ها یه ابزار قدرتمنده. با طراحی نرم‌ افزار اختصاصی و اتوماسیون، می‌تونی سرعت، دقت و درآمدت رو چند برابر کنی.',
     card2: ' با آرشام، آینده‌ی دیجیتال کسب‌وکار خودت رو بساز. طراحی سریع، ترجمه هوشمند، و تجربه کاربری بی‌نقص',
@@ -42,15 +36,18 @@ export default function Home() {
   const { lang } = useContext(LanguageContext);
 
   useEffect(() => {
-    const savedContent = localStorage.getItem('pageContent_Home');
-    if (savedContent) {
-      try {
-        const parsedContent = JSON.parse(savedContent);
-        setPageContent((prev) => ({ ...prev, ...parsedContent }));
-      } catch (err) {
-        console.error('خطا در لود محتوای Home:', err);
+    api.get('/content').then((res) => {
+      const hero = res.data && res.data.hero;
+      if (hero) {
+        setPageContent((prev) => ({
+          card1: hero.card1 || prev.card1,
+          card2: hero.card2 || prev.card2,
+        }));
+        if (Array.isArray(hero.sliderImages) && hero.sliderImages.length > 0) {
+          setImages(hero.sliderImages);
+        }
       }
-    }
+    }).catch((err) => console.error('خطا در لود محتوای Home:', err));
   }, []);
 
   useEffect(() => {
@@ -68,11 +65,12 @@ export default function Home() {
   }, [lang]);
 
   useEffect(() => {
+    if (images.length === 0) return;
     const interval = setInterval(() => {
       setCurrent((prev) => (prev + 1) % images.length);
     }, 10000);
     return () => clearInterval(interval);
-  }, []);
+  }, [images]);
 
   return (
     <div

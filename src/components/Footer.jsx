@@ -1,23 +1,37 @@
 import { useState, useEffect } from 'react';
 import { FaInstagram, FaLinkedin, FaTelegram, FaGithub } from 'react-icons/fa';
+import api from '../lib/api';
+
+const socialIcons = {
+  instagram: { Icon: FaInstagram, hover: 'hover:text-pink-400' },
+  linkedin: { Icon: FaLinkedin, hover: 'hover:text-blue-400' },
+  telegram: { Icon: FaTelegram, hover: 'hover:text-sky-400' },
+  github: { Icon: FaGithub, hover: 'hover:text-gray-200' },
+};
+
+const defaultSocialLinks = [
+  { platform: 'instagram', url: 'https://instagram.com/arshamai' },
+  { platform: 'linkedin', url: 'https://linkedin.com/in/arshamai' },
+  { platform: 'telegram', url: 'https://t.me/arshamai' },
+  { platform: 'github', url: 'https://github.com/arshamai' },
+];
 
 export default function Footer() {
   const [pageContent, setPageContent] = useState({
     copyright: `© ${new Date().getFullYear()} Arshamai.com | طراحی و توسعه توسط ارشام`,
     licenses: ['نماد اعتماد الکترونیکی', 'ساماندهی رسانه‌های دیجیتال', 'عضو اتحادیه کسب‌وکارهای اینترنتی'],
-    cards: [],
   });
+  const [socialLinks, setSocialLinks] = useState(defaultSocialLinks);
 
   useEffect(() => {
-    const savedContent = localStorage.getItem('pageContent_Footer');
-    if (savedContent) {
-      try {
-        const parsedContent = JSON.parse(savedContent);
-        setPageContent((prev) => ({ ...prev, ...parsedContent }));
-      } catch (err) {
-        console.error('خطا در لود محتوای Footer:', err);
+    api.get('/content').then((res) => {
+      if (res.data && res.data.footer) {
+        setPageContent((prev) => ({ ...prev, ...res.data.footer }));
       }
-    }
+      if (Array.isArray(res.data && res.data.socialLinks) && res.data.socialLinks.length > 0) {
+        setSocialLinks(res.data.socialLinks);
+      }
+    }).catch(() => {});
   }, []);
 
   return (
@@ -93,18 +107,16 @@ export default function Footer() {
       <div className="border-t border-blue-700 dark:border-gray-700 mt-10 pt-6 text-center">
         {/* آیکن‌های سوشال مدیا */}
         <div className="flex justify-center gap-6 mb-4 text-xl">
-          <a href="https://instagram.com/arshamai" target="_blank" rel="noopener noreferrer">
-            <FaInstagram className="hover:text-pink-400 transition" />
-          </a>
-          <a href="https://linkedin.com/in/arshamai" target="_blank" rel="noopener noreferrer">
-            <FaLinkedin className="hover:text-blue-400 transition" />
-          </a>
-          <a href="https://t.me/arshamai" target="_blank" rel="noopener noreferrer">
-            <FaTelegram className="hover:text-sky-400 transition" />
-          </a>
-          <a href="https://github.com/arshamai" target="_blank" rel="noopener noreferrer">
-            <FaGithub className="hover:text-gray-200 transition" />
-          </a>
+          {socialLinks.map((link, i) => {
+            const entry = socialIcons[link.platform];
+            if (!entry) return null;
+            const { Icon, hover } = entry;
+            return (
+              <a key={i} href={link.url} target="_blank" rel="noopener noreferrer">
+                <Icon className={`${hover} transition`} />
+              </a>
+            );
+          })}
         </div>
 
         {/* متن کپی‌رایت */}

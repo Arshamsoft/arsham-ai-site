@@ -2,11 +2,9 @@ import { useState, useEffect, useContext } from 'react';
 import { LanguageContext } from '../context/LanguageContext';
 import { translateText } from '../utils/translateText';
 import aboutImage from '../assets/8.png';
+import api from '../lib/api';
 
-export default function About() {
-  const { lang } = useContext(LanguageContext);
-
-  const professionalDescription = `
+const defaultDescription = `
 من ارشام هستم، توسعه‌دهنده‌ی وب و نرم‌افزار با بیش از ۶ سال تجربه در طراحی و توسعه پروژه‌های پیچیده‌ی فرانت‌اند و بک‌اند. 
 تخصص من شامل طراحی سیستم‌های مقیاس‌پذیر، APIهای امن و رابط‌های کاربری حرفه‌ای است. 
 تجربه کار با زبان‌های برنامه‌نویسی: 
@@ -16,7 +14,18 @@ export default function About() {
 تمرکز من بر روی بهینه‌سازی عملکرد، امنیت و تجربه کاربری بی‌نقص است.
   `;
 
-  const [translatedDescription, setTranslatedDescription] = useState(professionalDescription);
+export default function About() {
+  const { lang } = useContext(LanguageContext);
+  const [professionalDescription, setProfessionalDescription] = useState(defaultDescription);
+  const [translatedDescription, setTranslatedDescription] = useState(defaultDescription);
+
+  useEffect(() => {
+    api.get('/content').then((res) => {
+      if (res.data && res.data.about && res.data.about.content) {
+        setProfessionalDescription(res.data.about.content);
+      }
+    }).catch((err) => console.error('خطا در لود محتوای درباره ما:', err));
+  }, []);
 
   useEffect(() => {
     const translateDescription = async () => {
@@ -24,7 +33,7 @@ export default function About() {
       setTranslatedDescription(translated);
     };
     translateDescription();
-  }, [lang]);
+  }, [lang, professionalDescription]);
 
   return (
     <div className="min-h-screen w-full bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-gray-100 flex items-center justify-center p-8">
