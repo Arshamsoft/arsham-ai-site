@@ -8,6 +8,7 @@ import { LanguageProvider } from './context/LanguageContext';
 import Header from './components/Header';
 import Footer from './components/Footer';
 import AndroidApp from "./pages/AndroidApp";
+import VisitTracker from './components/VisitTracker';
 
 const Layout = () => (
   <>
@@ -20,6 +21,7 @@ const Layout = () => (
 function App() {
   return (
     <LanguageProvider>
+      <VisitTracker />
       <Routes>
         <Route element={<Layout />}>
           <Route path="/" element={<Home />} />
