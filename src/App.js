@@ -12,6 +12,7 @@ import Header from './components/Header';
 import Footer from './components/Footer';
 import AndroidApp from "./pages/AndroidApp";
 import VisitTracker from './components/VisitTracker';
+import BlogPost from './pages/BlogPost';
 
 const Layout = () => (
   <>
@@ -35,6 +36,7 @@ function App() {
           <Route path="/android" element={<AndroidApp />} />
           <Route path="/services" element={<Services />} />
           <Route path="/blog" element={<Blog />} />
+          <Route path="/blog/:id" element={<BlogPost />} />
         </Route>
       </Routes>
     </LanguageProvider>
