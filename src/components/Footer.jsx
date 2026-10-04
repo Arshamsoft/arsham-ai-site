@@ -1,132 +1,132 @@
-import { useState, useEffect } from 'react';
-import { FaInstagram, FaLinkedin, FaTelegram, FaGithub } from 'react-icons/fa';
-import api from '../lib/api';
-
-const socialIcons = {
-  instagram: { Icon: FaInstagram, hover: 'hover:text-pink-400' },
-  linkedin: { Icon: FaLinkedin, hover: 'hover:text-blue-400' },
-  telegram: { Icon: FaTelegram, hover: 'hover:text-sky-400' },
-  github: { Icon: FaGithub, hover: 'hover:text-gray-200' },
-};
-
-const defaultSocialLinks = [
-  { platform: 'instagram', url: 'https://instagram.com/arshamai' },
-  { platform: 'linkedin', url: 'https://linkedin.com/in/arshamai' },
-  { platform: 'telegram', url: 'https://t.me/arshamai' },
-  { platform: 'github', url: 'https://github.com/arshamai' },
-];
+import { Link } from 'react-router-dom';
+import { FaClock, FaMapMarkerAlt, FaPhoneAlt } from 'react-icons/fa';
+import logo from '../assets/logo.png';
+import { useContent } from '../context/ContentContext';
+import {
+  DEFAULT_LICENSES,
+  DEFAULT_SERVICES,
+  HEADER_DEFAULTS,
+  asList,
+  socialIcon,
+  socialLinks,
+  telHref,
+  textOf,
+} from '../lib/helpers';
+import Tile from './Tile';
 
 export default function Footer() {
-  const [pageContent, setPageContent] = useState({
-    copyright: `© ${new Date().getFullYear()} Arshamai.com | طراحی و توسعه توسط ارشام`,
-    licenses: ['نماد اعتماد الکترونیکی', 'ساماندهی رسانه‌های دیجیتال', 'عضو اتحادیه کسب‌وکارهای اینترنتی'],
-  });
-  const [socialLinks, setSocialLinks] = useState(defaultSocialLinks);
+  const { content } = useContent();
+  const footer = content.footer || {};
+  const labels = { ...HEADER_DEFAULTS, ...(content.header || {}) };
+  const socials = socialLinks(content.socialLinks);
+  const services = asList(content.services, DEFAULT_SERVICES).map(textOf).filter(Boolean).slice(0, 8);
+  const licenses = asList(footer.licenses, DEFAULT_LICENSES).map(textOf).filter(Boolean);
+  const copyright = footer.copyright || `© ${new Date().getFullYear()} Arshamai.com | طراحی و توسعه توسط ارشام`;
 
-  useEffect(() => {
-    api.get('/content').then((res) => {
-      if (res.data && res.data.footer) {
-        setPageContent((prev) => ({ ...prev, ...res.data.footer }));
-      }
-      if (Array.isArray(res.data && res.data.socialLinks) && res.data.socialLinks.length > 0) {
-        setSocialLinks(res.data.socialLinks);
-      }
-    }).catch(() => {});
-  }, []);
+  const pages = [
+    { to: '/', label: labels.home },
+    { to: '/services', label: labels.services },
+    { to: '/portfolio', label: labels.portfolio },
+    { to: '/android', label: 'اپلیکیشن‌های اندرویدی' },
+    { to: '/shop', label: labels.shop },
+    { to: '/blog', label: labels.blog },
+    { to: '/about', label: labels.about },
+    { to: '/contact', label: labels.contact },
+  ];
 
   return (
-    <footer className="w-full bg-blue-900 dark:bg-gray-900 text-white dark:text-gray-100 mt-auto px-8 py-12">
-      <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-4 gap-10">
-        {/* ستون ۱: فرم تماس */}
-        <div className="text-right">
-          <h3 className="text-lg font-semibold mb-4">تماس</h3>
-          <form className="space-y-3">
-            <input
-              type="text"
-              placeholder="نام *"
-              className="w-full px-3 py-2 rounded text-black dark:text-gray-100 bg-white dark:bg-gray-700 text-sm text-right"
-            />
-            <input
-              type="email"
-              placeholder="پست الکترونیک *"
-              className="w-full px-3 py-2 rounded text-black dark:text-gray-100 bg-white dark:bg-gray-700 text-sm text-right"
-            />
-            <input
-              type="text"
-              placeholder="موضوع"
-              className="w-full px-3 py-2 rounded text-black dark:text-gray-100 bg-white dark:bg-gray-700 text-sm text-right"
-            />
-            <textarea
-              placeholder="پیغام *"
-              rows="3"
-              className="w-full px-3 py-2 rounded text-black dark:text-gray-100 bg-white dark:bg-gray-700 text-sm text-right"
-            ></textarea>
-            <button
-              type="submit"
-              className="bg-orange-500 dark:bg-orange-600 hover:bg-orange-600 dark:hover:bg-orange-700 text-white px-6 py-2 rounded text-sm transition"
-            >
-              ارسال
-            </button>
-          </form>
+    <footer className="relative border-t border-line/60 bg-surface/50">
+      <div aria-hidden="true" className="pattern-band" />
+
+      <div className="container-x grid gap-12 py-16 sm:grid-cols-2 lg:grid-cols-[1.5fr_1fr_1.1fr_1.2fr]">
+        <div>
+          <Tile as={Link} to="/" cut={10} tone="night" className="inline-flex" faceClassName="px-3 py-1.5" aria-label="آرشام، صفحه‌ی اصلی">
+            <img src={logo} alt="" className="h-10 w-auto" />
+          </Tile>
+          <p className="mt-6 max-w-xs leading-8 text-muted">طراحی، ساخت، اجرا و پشتیبانی انواع نرم افزارها از صفر تا صد</p>
+          {socials.length ? (
+            <ul className="mt-6 flex flex-wrap gap-2">
+              {socials.map((item) => {
+                const Icon = socialIcon(item.platform);
+                return (
+                  <li key={`${item.platform}-${item.url}`}>
+                    <a
+                      href={item.url}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      aria-label={item.platform}
+                      className="icon-cell !h-10 !w-10 !text-base transition hover:bg-turq hover:!text-ink"
+                    >
+                      <Icon aria-hidden="true" />
+                    </a>
+                  </li>
+                );
+              })}
+            </ul>
+          ) : null}
         </div>
 
-        {/* ستون ۲: خدمات */}
-        <div className="text-right">
-          <h3 className="text-lg font-semibold mb-4">خدمات</h3>
-          <ul className="text-sm border-t border-gray-200 dark:border-gray-600">
-            {['ساخت اپلیکیشن اندروید','طراحی سایت','ساخت اپلیکیشن PWA','ساخت مدل هوش مصنوعی','ساخت انواع ربات تلگرامی','انجام پروژه ای دانشگاهی','ساخت اپلیکیشن های ویندوزی','راه اندازی شبکه','پشتیبانی'].map((item, i) => (
-              <li key={i} className="border-b border-gray-150 dark:border-gray-600 py-2 pr-2">
-                <a href="#" className="hover:underline">{item}</a>
+        <nav aria-labelledby="footer-pages">
+          <h2 id="footer-pages" className="font-display text-base font-bold">
+            صفحه‌ها
+          </h2>
+          <ul className="mt-5 grid gap-2.5">
+            {pages.map((item) => (
+              <li key={item.to}>
+                <Link to={item.to} className="text-muted transition hover:text-fg">
+                  {item.label}
+                </Link>
+              </li>
+            ))}
+          </ul>
+        </nav>
+
+        <div>
+          <h2 className="font-display text-base font-bold">خدمات</h2>
+          <ul className="mt-5 grid gap-2.5">
+            {services.map((name) => (
+              <li key={name}>
+                <Link to="/services" className="text-muted transition hover:text-fg">
+                  {name}
+                </Link>
               </li>
             ))}
           </ul>
         </div>
 
-        {/* ستون ۳: شرکت */}
-        <div className="text-right">
-          <h3 className="text-lg font-semibold mb-4">آرشام سافت</h3>
-          <ul className="text-sm border-t border-gray-300 dark:border-gray-600">
-            {['وبلاگ','ارتباط با ما','خانه','درباره ما','فروشگاه'].map((item, i) => (
-              <li key={i} className="border-b border-gray-150 dark:border-gray-700 py-2">
-                <a href="#" className="hover:underline">{item}</a>
-              </li>
-            ))}
+        <div>
+          <h2 className="font-display text-base font-bold">ارتباط با ما</h2>
+          <ul className="mt-5 grid gap-4 text-muted">
+            <li>
+              <a href={telHref(labels.phone)} className="inline-flex items-center gap-3 transition hover:text-fg">
+                <FaPhoneAlt aria-hidden="true" className="text-turq" />
+                <span dir="ltr">{labels.phone}</span>
+              </a>
+            </li>
+            <li className="flex items-center gap-3">
+              <FaMapMarkerAlt aria-hidden="true" className="flex-none text-turq" />
+              <span>{labels.location}</span>
+            </li>
+            <li className="flex items-start gap-3">
+              <FaClock aria-hidden="true" className="mt-2 flex-none text-turq" />
+              <span className="leading-8">{labels.hours}</span>
+            </li>
           </ul>
-        </div>
-
-        {/* ستون ۴: درباره شرکت */}
-        <div className="text-right">
-          <h2 className="text-xl font-bold mb-4">آرشام سافت</h2>
-          <p className="text-sm leading-6 mb-4">
-            طراحی، ساخت، اجرا و پشتیبانی انواع نرم افزارها از صفر تا صد
-          </p>
         </div>
       </div>
 
-      {/* بخش پایین فوتر */}
-      <div className="border-t border-blue-700 dark:border-gray-700 mt-10 pt-6 text-center">
-        {/* آیکن‌های سوشال مدیا */}
-        <div className="flex justify-center gap-6 mb-4 text-xl">
-          {socialLinks.map((link, i) => {
-            const entry = socialIcons[link.platform];
-            if (!entry) return null;
-            const { Icon, hover } = entry;
-            return (
-              <a key={i} href={link.url} target="_blank" rel="noopener noreferrer">
-                <Icon className={`${hover} transition`} />
-              </a>
-            );
-          })}
-        </div>
-
-        {/* متن کپی‌رایت */}
-        <p className="text-sm text-gray-300 dark:text-gray-400 mb-4">{pageContent.copyright}</p>
-
-        {/* بخش مجوزها */}
-        <div className="flex justify-center items-center gap-4 flex-wrap text-xs text-gray-400 dark:text-gray-500">
-          {pageContent.licenses.map((license, index) => (
-            <span key={index}>{license}</span>
-          ))}
+      <div className="border-t border-line/60">
+        <div className="container-x flex flex-col gap-4 py-6 text-sm text-muted md:flex-row md:items-center md:justify-between">
+          <p>{copyright}</p>
+          {licenses.length ? (
+            <ul className="flex flex-wrap gap-2">
+              {licenses.map((name) => (
+                <li key={name} className="chip">
+                  {name}
+                </li>
+              ))}
+            </ul>
+          ) : null}
         </div>
       </div>
     </footer>

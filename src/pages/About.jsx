@@ -1,62 +1,60 @@
-import { useState, useEffect, useContext } from 'react';
-import { LanguageContext } from '../context/LanguageContext';
-import { translateText } from '../utils/translateText';
+import { useContext } from 'react';
 import aboutImage from '../assets/8.png';
-import api from '../lib/api';
+import { LanguageContext } from '../context/LanguageContext';
+import { useContent } from '../context/ContentContext';
+import useTranslated from '../lib/useTranslated';
+import { DEFAULT_SKILLS, HEADER_DEFAULTS, asList, textOf } from '../lib/helpers';
+import PageHead from '../components/PageHead';
+import Tile from '../components/Tile';
+import Reveal from '../components/Reveal';
+import TechRibbon from '../components/TechRibbon';
+import CtaBand from '../components/CtaBand';
+import { StarHalo } from '../components/Star';
 
-const defaultDescription = `
-من ارشام هستم، توسعه‌دهنده‌ی وب و نرم‌افزار با بیش از ۶ سال تجربه در طراحی و توسعه پروژه‌های پیچیده‌ی فرانت‌اند و بک‌اند. 
-تخصص من شامل طراحی سیستم‌های مقیاس‌پذیر، APIهای امن و رابط‌های کاربری حرفه‌ای است. 
-تجربه کار با زبان‌های برنامه‌نویسی: 
+const DEFAULT_ABOUT = `من ارشام هستم، توسعه‌دهنده‌ی وب و نرم‌افزار با بیش از ۶ سال تجربه در طراحی و توسعه پروژه‌های پیچیده‌ی فرانت‌اند و بک‌اند.
+تخصص من شامل طراحی سیستم‌های مقیاس‌پذیر، APIهای امن و رابط‌های کاربری حرفه‌ای است.
+تجربه کار با زبان‌های برنامه‌نویسی:
 فرانت‌اند: JavaScript, TypeScript, HTML5, CSS3, React, Vue.js
 بک‌اند: Node.js, Python, Java, PHP, C#, Go, Ruby
-همچنین تجربه در مدیریت پایگاه داده‌ها (MySQL, PostgreSQL, MongoDB)، معماری نرم‌افزار و DevOps را دارم. 
-تمرکز من بر روی بهینه‌سازی عملکرد، امنیت و تجربه کاربری بی‌نقص است.
-  `;
+همچنین تجربه در مدیریت پایگاه داده‌ها (MySQL, PostgreSQL, MongoDB)، معماری نرم‌افزار و DevOps را دارم.
+تمرکز من بر روی بهینه‌سازی عملکرد، امنیت و تجربه کاربری بی‌نقص است.`;
 
 export default function About() {
+  const { content } = useContent();
   const { lang } = useContext(LanguageContext);
-  const [professionalDescription, setProfessionalDescription] = useState(defaultDescription);
-  const [translatedDescription, setTranslatedDescription] = useState(defaultDescription);
+  const about = content.about || {};
+  const labels = { ...HEADER_DEFAULTS, ...(content.header || {}) };
 
-  useEffect(() => {
-    api.get('/content').then((res) => {
-      if (res.data && res.data.about && res.data.about.content) {
-        setProfessionalDescription(res.data.about.content);
-      }
-    }).catch((err) => console.error('خطا در لود محتوای درباره ما:', err));
-  }, []);
+  const text = useTranslated(textOf(about.content) || DEFAULT_ABOUT, lang);
+  const skills = asList(about.skills, DEFAULT_SKILLS).map(textOf).filter(Boolean);
+  const image = textOf(about.image) || aboutImage;
 
-  useEffect(() => {
-    const translateDescription = async () => {
-      const translated = await translateText(professionalDescription, lang);
-      setTranslatedDescription(translated);
-    };
-    translateDescription();
-  }, [lang, professionalDescription]);
+  const breakAt = text.indexOf('\n');
+  const lead = breakAt > 0 ? text.slice(0, breakAt) : text;
+  const rest = breakAt > 0 ? text.slice(breakAt + 1) : '';
 
   return (
-    <div className="min-h-screen w-full bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-gray-100 flex items-center justify-center p-8">
-      <div className="max-w-6xl w-full space-y-12">
-        {/* عنوان صفحه */}
-        <h2 className="text-4xl font-bold text-center text-blue-700 dark:text-blue-400">درباره ما</h2>
+    <>
+      <PageHead title={labels.about} />
 
-        {/* متن + تصویر کنار هم */}
-        <div className="flex flex-col md:flex-row items-center gap-8 bg-white dark:bg-gray-800 shadow-lg dark:shadow-gray-700 rounded-lg p-6 transition hover:shadow-2xl">
-          <div className="md:w-1/2">
-            <p className="text-gray-700 dark:text-gray-300 text-lg leading-relaxed whitespace-pre-line">
-              {translatedDescription}
-            </p>
-          </div>
-          <div className="md:w-1/2 flex justify-center">
-            <img
-              src={aboutImage}
-              alt="About"
-              className="rounded-lg shadow-md w-full max-w-sm transform transition duration-300 hover:scale-105"
-            />
-          </div>
-        </div>
-      </div>
-    </div>
+      <section className="container-x grid items-center gap-16 pb-24 lg:grid-cols-[0.85fr_1.15fr] lg:gap-14">
+        <Reveal className="relative mx-auto w-full max-w-md py-10">
+          <StarHalo className="absolute left-1/2 top-1/2 aspect-square w-[128%] -translate-x-1/2 -translate-y-1/2" />
+          <Tile cut={34} className="relative" faceClassName="p-2.5">
+            <img src={image} alt="درباره‌ی آرشام" className="h-auto w-full" />
+          </Tile>
+        </Reveal>
+
+        <Reveal delay={120}>
+          <Tile cut={28} faceClassName="p-8 md:p-12">
+            <p className="font-display text-xl font-bold leading-[2] md:text-2xl md:leading-[2]">{lead}</p>
+            {rest ? <p className="mt-6 whitespace-pre-line text-lg leading-[2.1] text-fg/85">{rest}</p> : null}
+          </Tile>
+        </Reveal>
+      </section>
+
+      <TechRibbon items={skills} />
+      <CtaBand />
+    </>
   );
 }

@@ -1,101 +1,65 @@
-import { useState, useEffect } from "react";
-import React from "react"; // برای React.Fragment
+import { useEffect, useState } from 'react';
 import image1 from '../assets/YY.png';
 import image2 from '../assets/p2.png';
 import video1 from '../assets/v1.mp4';
 import api from '../lib/api';
+import { listFrom } from '../lib/helpers';
+import PageHead from '../components/PageHead';
+import Reveal from '../components/Reveal';
+import ProjectCard from '../components/ProjectCard';
+import SkeletonGrid from '../components/SkeletonGrid';
+import CtaBand from '../components/CtaBand';
 
-// مقدار اولیه کارت‌ها (تا وقتی داده از بک‌اند نیومده یا اگه اتصال قطع بود)
-const initialCards = [
+// اگه بک‌اند در دسترس نبود، همون کارت‌های قبلی سایت نمایش داده می‌شن
+const FALLBACK = [
   {
-    title: "اپلیکیشن ScoreBoard",
-    desc: "یک اپلیکیشن بسیار کاربردی برای نمایش و ویرایش امتیاز مخصوص ورزشگاه ها، کاملا لوکال و پیشرفته. لطفا جهت خرید یا سفارش تماس بگیرید.",
+    _id: 'scoreboard',
+    title: 'اپلیکیشن ScoreBoard',
+    description: 'یک اپلیکیشن بسیار کاربردی برای نمایش و ویرایش امتیاز مخصوص ورزشگاه‌ها، کاملاً لوکال و پیشرفته. لطفاً جهت خرید یا سفارش تماس بگیرید.',
     image: image1,
     video: video1,
   },
-  {
-    title: "اپلیکیشن فروشگاهی کدبانو",
-    desc: "خرید راحت و بدون دردسر از سراسر کشور",
-    image: image2,
-  },
-  {
-    title: "اپلیکیشن آموزشی",
-    desc: "یادگیری مهارت‌ها با ویدیو",
-    image: "/assets/3.png",
-  },
-  {
-    title: "اپلیکیشن پزشکی",
-    desc: "نوبت‌دهی و مشاوره آنلاین",
-    image: "/assets/4.png",
-  },
+  { _id: 'kadbanu', title: 'اپلیکیشن فروشگاهی کدبانو', description: 'خرید راحت و بدون دردسر از سراسر کشور', image: image2 },
+  { _id: 'education', title: 'اپلیکیشن آموزشی', description: 'یادگیری مهارت‌ها با ویدیو', image: '/assets/3.png' },
+  { _id: 'medical', title: 'اپلیکیشن پزشکی', description: 'نوبت‌دهی و مشاوره آنلاین', image: '/assets/4.png' },
 ];
 
 export default function AndroidApp() {
-  const [cards, setCards] = useState(initialCards);
+  const [items, setItems] = useState(null);
 
   useEffect(() => {
-    api.get('/portfolio').then((res) => {
-      const items = (res.data.data || res.data || []).filter((p) => p.category === 'اندروید');
-      if (items.length > 0) {
-        setCards(items.map((p) => ({
-          title: p.title,
-          desc: p.description,
-          image: p.image,
-          video: p.video,
-        })));
-      }
-    }).catch((err) => console.error('خطا در لود اپلیکیشن‌ها:', err));
+    let alive = true;
+    api
+      .get('/portfolio', { params: { limit: 100 } })
+      .then((res) => {
+        const android = listFrom(res).filter((item) => item.category === 'اندروید');
+        if (alive) setItems(android.length ? android : FALLBACK);
+      })
+      .catch(() => {
+        if (alive) setItems(FALLBACK);
+      });
+    return () => {
+      alive = false;
+    };
   }, []);
 
   return (
-    <div className="flex flex-col min-h-screen bg-gray-50 dark:bg-gray-900">
-      <main className="flex-grow container mx-auto px-6 py-12">
-        <h1 className="text-3xl font-bold text-center mb-10 text-blue-700 dark:text-blue-400">
-          اپلیکیشن‌های اندرویدی
-        </h1>
-
-        <div className="col-span-full my-12 border-t border-gray-300 dark:border-gray-700"></div>
-
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-10">
-          {cards.map((card, index) => (
-            <React.Fragment key={index}>
-              <div className="bg-white dark:bg-gray-800 rounded-xl shadow-lg hover:shadow-2xl transition duration-300 overflow-hidden w-full">
-                {/* تصویر اصلی بالا */}
-                {card.image && (
-                  <img
-                    src={card.image}
-                    alt={card.title}
-                    className="w-full h-106 object-cover"
-                  />
-                )}
-
-                <div className="p-6 flex flex-col justify-between">
-                  <h3 className="text-xl font-semibold text-blue-600 dark:text-blue-300 mb-2">
-                    {card.title}
-                  </h3>
-                  <p className="text-gray-700 dark:text-gray-300 text-sm leading-relaxed mb-4">
-                    {card.desc}
-                  </p>
-
-                  {/* ویدیو در پایین کارت (اگر وجود داشت) */}
-                  {card.video && (
-                    <video
-                      controls
-                      className="w-full h-90 object-cover rounded-lg"
-                    >
-                      <source src={card.video} type="video/mp4" />
-                    </video>
-                  )}
-                </div>
-              </div>
-
-              {index === 2 && (
-                <div className="col-span-full my-12 border-t border-gray-300 dark:border-gray-700"></div>
-              )}
-            </React.Fragment>
-          ))}
-        </div>
-      </main>
-    </div>
+    <>
+      <PageHead title="اپلیکیشن‌های اندرویدی" subtitle="مجموعه نرم‌افزارهای ساخته‌شده برای گوشی‌ها و تبلت‌ها" trail={[{ to: '/portfolio', label: 'نمونه‌کارها' }]} />
+      <section className="container-x">
+        {items ? (
+          <div className="grid gap-6 md:grid-cols-2 xl:grid-cols-3">
+            {items.map((item, index) => (
+              <Reveal key={item._id || item.title} delay={(index % 3) * 80} className="h-full">
+                <ProjectCard item={item} />
+              </Reveal>
+            ))}
+          </div>
+        ) : (
+          <SkeletonGrid count={3} className="md:grid-cols-2 xl:grid-cols-3" />
+        )}
+      </section>
+      <CtaBand />
+    </>
   );
 }

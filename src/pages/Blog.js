@@ -1,50 +1,117 @@
-// frontend/src/pages/Blog.js (جایگزین کن)
-import { useState, useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
+import { FaRegCalendar, FaRegClock } from 'react-icons/fa';
 import api from '../lib/api';
+import { useContent } from '../context/ContentContext';
+import { HEADER_DEFAULTS, excerptOf, formatDate, listFrom, readingMinutes, faNumber } from '../lib/helpers';
+import PageHead from '../components/PageHead';
+import Tile from '../components/Tile';
+import Button from '../components/Button';
+import Reveal from '../components/Reveal';
+import SkeletonGrid from '../components/SkeletonGrid';
+import StateMessage from '../components/StateMessage';
 
 export default function Blog() {
+  const { content } = useContent();
+  const labels = { ...HEADER_DEFAULTS, ...(content.header || {}) };
   const [articles, setArticles] = useState([]);
-  const [loading, setLoading] = useState(true);
+  const [status, setStatus] = useState('loading');
+  const [attempt, setAttempt] = useState(0);
 
   useEffect(() => {
-    api.get('/articles').then((res) => {
-      setArticles(res.data.data || res.data || []);
-    }).catch(() => {}).finally(() => setLoading(false));
-  }, []);
-
-  if (!loading && articles.length === 0) {
-    return (
-      <div className="min-h-screen w-full bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-gray-100 flex items-center justify-center p-8">
-        <div className="text-center max-w-xl">
-          <h2 className="text-4xl font-bold text-blue-700 dark:text-blue-400 mb-4">وبلاگ</h2>
-          <p className="text-gray-600 dark:text-gray-300 text-lg leading-relaxed">
-            مطالب وبلاگ به‌زودی اضافه می‌شن.
-          </p>
-        </div>
-      </div>
-    );
-  }
+    let alive = true;
+    setStatus('loading');
+    api
+      .get('/articles', { params: { limit: 100 } })
+      .then((res) => {
+        if (!alive) return;
+        setArticles(listFrom(res));
+        setStatus('ready');
+      })
+      .catch(() => {
+        if (alive) setStatus('error');
+      });
+    return () => {
+      alive = false;
+    };
+  }, [attempt]);
 
   return (
-    <div className="min-h-screen w-full bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-gray-100 p-8">
-      <div className="max-w-5xl mx-auto">
-        <h2 className="text-4xl font-bold text-center text-blue-700 dark:text-blue-400 mb-12">وبلاگ</h2>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-          {articles.map((a) => (
-            <Link key={a._id} to={`/blog/${a._id}`} className="block">
-              <div className="bg-white dark:bg-gray-800 rounded-xl shadow-lg hover:shadow-2xl transition overflow-hidden h-full">
-                {a.image && <img src={a.image} alt={a.title} className="w-full h-48 object-cover" />}
-                <div className="p-6">
-                  <h3 className="text-xl font-semibold text-blue-600 dark:text-blue-400 mb-2">{a.title}</h3>
-                  {a.excerpt && <p className="text-gray-700 dark:text-gray-300 text-sm leading-relaxed">{a.excerpt}</p>}
-                  <span className="mt-4 inline-block text-sm text-blue-500 dark:text-blue-300 hover:underline">ادامه مطلب ←</span>
-                </div>
-              </div>
-            </Link>
-          ))}
+    <>
+      <PageHead title={labels.blog} subtitle="یادداشت‌ها و آموزش‌های آرشام درباره‌ی برنامه‌نویسی و نرم‌افزار" />
+
+      <section className="container-x pb-24">
+        {status === 'loading' ? <SkeletonGrid count={4} className="md:grid-cols-2" /> : null}
+
+        {status === 'error' ? (
+          <StateMessage
+            title="مطالب بارگذاری نشد"
+            text="اتصال اینترنت را بررسی کنید و دوباره امتحان کنید."
+            action={
+              <Button variant="ghost" onClick={() => setAttempt((n) => n + 1)}>
+                تلاش دوباره
+              </Button>
+            }
+          />
+        ) : null}
+
+        {status === 'ready' && !articles.length ? (
+          <StateMessage
+            title="هنوز مطلبی منتشر نشده"
+            text="به‌زودی اولین مطلب اینجا قرار می‌گیرد. تا آن زمان، خدمات ما را ببینید."
+            action={<Button to="/services">دیدن خدمات</Button>}
+          />
+        ) : null}
+
+        {articles.length ? (
+          <div className="grid gap-6 md:grid-cols-2">
+            {articles.map((article, index) => (
+              <Reveal key={article._id} delay={(index % 2) * 90} className={`h-full ${index === 0 ? 'md:col-span-2' : ''}`}>
+                <ArticleCard article={article} featured={index === 0} />
+              </Reveal>
+            ))}
+          </div>
+        ) : null}
+      </section>
+    </>
+  );
+}
+
+function ArticleCard({ article, featured }) {
+  const date = formatDate(article.createdAt);
+  return (
+    <Tile
+      as={Link}
+      to={`/blog/${article._id}`}
+      hover
+      cut={24}
+      className="group h-full"
+      faceClassName={`grid h-full ${featured ? 'lg:grid-cols-[1.15fr_1fr]' : ''}`}
+    >
+      <div className={`relative overflow-hidden bg-raised ${featured ? 'aspect-[16/9] lg:aspect-auto lg:min-h-[22rem]' : 'aspect-[16/9]'}`}>
+        {article.image ? (
+          <img src={article.image} alt="" loading="lazy" className="absolute inset-0 h-full w-full object-cover transition duration-700 group-hover:scale-105" />
+        ) : (
+          <div className="pattern absolute inset-0 opacity-70" />
+        )}
+      </div>
+      <div className="flex flex-col p-7 md:p-8">
+        {article.category ? <span className="chip self-start">{article.category}</span> : null}
+        <h2 className={`mt-4 font-display font-bold ${featured ? 'text-2xl leading-[1.8] md:text-3xl' : 'text-xl leading-9'}`}>{article.title}</h2>
+        <p className="mt-3 leading-8 text-muted">{excerptOf(article, featured ? 260 : 150)}</p>
+        <div className="mt-auto flex flex-wrap items-center gap-5 pt-6 text-sm text-muted">
+          {date ? (
+            <span className="inline-flex items-center gap-2">
+              <FaRegCalendar aria-hidden="true" />
+              {date}
+            </span>
+          ) : null}
+          <span className="inline-flex items-center gap-2">
+            <FaRegClock aria-hidden="true" />
+            {faNumber(readingMinutes(article.content))} دقیقه مطالعه
+          </span>
         </div>
       </div>
-    </div>
+    </Tile>
   );
 }

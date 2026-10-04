@@ -1,85 +1,128 @@
-import { useState, useEffect, useContext } from 'react';
+import { useContext, useState } from 'react';
+import { FaClock, FaInfoCircle, FaMapMarkerAlt, FaPaperPlane } from 'react-icons/fa';
 import { LanguageContext } from '../context/LanguageContext';
-import { translateText } from '../utils/translateText';
-import api from '../lib/api';
+import { useContent } from '../context/ContentContext';
+import useTranslated from '../lib/useTranslated';
+import { HEADER_DEFAULTS, socialIcon, socialLinks, telHref, textOf } from '../lib/helpers';
+import PageHead from '../components/PageHead';
+import Tile from '../components/Tile';
+import Button from '../components/Button';
+import Reveal from '../components/Reveal';
 
 export default function Contact() {
+  const { content } = useContent();
   const { lang } = useContext(LanguageContext);
-  const [title, setTitle] = useState('');
-  const [namePlaceholder, setNamePlaceholder] = useState('');
-  const [emailPlaceholder, setEmailPlaceholder] = useState('');
-  const [messagePlaceholder, setMessagePlaceholder] = useState('');
-  const [buttonText, setButtonText] = useState('');
-  const [pageContent, setPageContent] = useState({
-    title: 'تماس با من',
-    namePlaceholder: 'نام شما',
-    emailPlaceholder: 'ایمیل',
-    messagePlaceholder: 'پیام شما',
-    buttonText: 'ارسال پیام',
-    cards: [],
-  });
+  const info = content.contactInfo || {};
+  const labels = { ...HEADER_DEFAULTS, ...(content.header || {}) };
+  const socials = socialLinks(content.socialLinks);
 
-  useEffect(() => {
-    api.get('/content').then((res) => {
-      if (res.data && res.data.contactInfo) {
-        setPageContent((prev) => ({ ...prev, ...res.data.contactInfo }));
-      }
-    }).catch((err) => console.error('خطا در لود محتوای Contact:', err));
-  }, []);
+  const title = useTranslated(textOf(info.title) || 'تماس با من', lang);
+  const nameLabel = useTranslated(textOf(info.namePlaceholder) || 'نام شما', lang);
+  const emailLabel = useTranslated(textOf(info.emailPlaceholder) || 'ایمیل', lang);
+  const messageLabel = useTranslated(textOf(info.messagePlaceholder) || 'پیام شما', lang);
+  const buttonText = useTranslated(textOf(info.buttonText) || 'ارسال پیام', lang);
 
-  useEffect(() => {
-    const translateAll = async () => {
-      setTitle(await translateText(pageContent.title, lang));
-      setNamePlaceholder(await translateText(pageContent.namePlaceholder, lang));
-      setEmailPlaceholder(await translateText(pageContent.emailPlaceholder, lang));
-      setMessagePlaceholder(await translateText(pageContent.messagePlaceholder, lang));
-      setButtonText(await translateText(pageContent.buttonText, lang));
-    };
-    translateAll();
-  }, [lang, pageContent]);
+  // فرم هنوز به سامانه‌ی دریافت پیام وصل نیست؛ به‌جای وانمود به ارسال، راه تماس مستقیم رو نشون می‌دیم
+  const [notice, setNotice] = useState(false);
+  const onSubmit = (event) => {
+    event.preventDefault();
+    setNotice(true);
+  };
 
   return (
-    <div className="min-h-screen p-8 bg-gray-100 dark:bg-gray-900 flex flex-col items-center">
-      <h2 className="text-3xl font-bold mb-8 text-blue-700 dark:text-blue-400 text-center">
-        {title || 'در حال ترجمه...'}
-      </h2>
+    <>
+      <PageHead title={title} subtitle="برای سفارش پروژه یا مشاوره، تماس بگیرید یا پیام بدهید." />
 
-      <form className="w-full max-w-3xl space-y-4">
-        <input
-          type="text"
-          placeholder={namePlaceholder || '...'}
-          className="w-full p-3 border rounded-xl shadow-lg dark:bg-gray-800 dark:text-gray-200 dark:border-gray-700 focus:ring-2 focus:ring-blue-300"
-        />
-        <input
-          type="email"
-          placeholder={emailPlaceholder || '...'}
-          className="w-full p-3 border rounded-xl shadow-lg dark:bg-gray-800 dark:text-gray-200 dark:border-gray-700 focus:ring-2 focus:ring-blue-300"
-        />
-        <textarea
-          placeholder={messagePlaceholder || '...'}
-          className="w-full p-3 border rounded-xl shadow-lg h-36 dark:bg-gray-800 dark:text-gray-200 dark:border-gray-700 focus:ring-2 focus:ring-blue-300"
-        />
-        <button
-          type="submit"
-          className="bg-blue-600 text-white px-6 py-2 rounded-xl shadow-lg hover:bg-blue-700 dark:bg-blue-500 dark:hover:bg-blue-600 transition w-full md:w-auto"
-        >
-          {buttonText || '...'}
-        </button>
-      </form>
+      <section className="container-x grid gap-8 pb-24 lg:grid-cols-[1fr_1.3fr]">
+        <div className="grid content-start gap-6">
+          <Reveal>
+            <Tile cut={24} faceClassName="p-8">
+              <p className="text-sm text-muted">شماره‌ی تماس</p>
+              <a href={telHref(labels.phone)} dir="ltr" className="mt-2 block font-display text-3xl font-extrabold transition hover:text-turq">
+                {labels.phone}
+              </a>
+              <ul className="mt-8 grid gap-4 text-muted">
+                <li className="flex items-center gap-3">
+                  <FaMapMarkerAlt aria-hidden="true" className="flex-none text-turq" />
+                  <span>{labels.location}</span>
+                </li>
+                <li className="flex items-start gap-3">
+                  <FaClock aria-hidden="true" className="mt-2 flex-none text-turq" />
+                  <span className="leading-8">{labels.hours}</span>
+                </li>
+              </ul>
+            </Tile>
+          </Reveal>
 
-      <div className="mt-12 w-full max-w-3xl grid grid-cols-1 gap-6">
-        {pageContent.cards.map((card, index) => (
-          <div
-            key={index}
-            className="bg-white dark:bg-gray-800 p-6 rounded-2xl shadow-2xl hover:shadow-3xl transition-all duration-300"
-          >
-            <h3 className="text-xl font-semibold mb-2 text-gray-800 dark:text-gray-100">
-              {card.title || 'عنوان کارت'}
-            </h3>
-            <p className="text-gray-700 dark:text-gray-300">{card.desc || 'توضیحات کارت'}</p>
-          </div>
-        ))}
-      </div>
-    </div>
+          {socials.length ? (
+            <Reveal delay={100}>
+              <Tile cut={24} faceClassName="p-8">
+                <p className="text-sm text-muted">شبکه‌های اجتماعی</p>
+                <ul className="mt-5 grid gap-3 sm:grid-cols-2">
+                  {socials.map((item) => {
+                    const Icon = socialIcon(item.platform);
+                    return (
+                      <li key={`${item.platform}-${item.url}`}>
+                        <a
+                          href={item.url}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="flex items-center gap-3 font-semibold capitalize transition hover:text-turq"
+                        >
+                          <span className="icon-cell !h-10 !w-10 !text-base">
+                            <Icon aria-hidden="true" />
+                          </span>
+                          <span dir="ltr">{item.platform}</span>
+                        </a>
+                      </li>
+                    );
+                  })}
+                </ul>
+              </Tile>
+            </Reveal>
+          ) : null}
+        </div>
+
+        <Reveal delay={160}>
+          <Tile cut={28} faceClassName="p-8 md:p-10">
+            <form onSubmit={onSubmit} className="grid gap-6">
+              <div className="grid gap-6 sm:grid-cols-2">
+                <label className="grid gap-2">
+                  <span className="text-sm font-semibold">{nameLabel}</span>
+                  <input name="name" type="text" required autoComplete="name" className="field" />
+                </label>
+                <label className="grid gap-2">
+                  <span className="text-sm font-semibold">{emailLabel}</span>
+                  <input name="email" type="email" required autoComplete="email" dir="ltr" className="field text-left" />
+                </label>
+              </div>
+              <label className="grid gap-2">
+                <span className="text-sm font-semibold">{messageLabel}</span>
+                <textarea name="message" rows={6} required className="field resize-y" />
+              </label>
+
+              {notice ? (
+                <div role="status" className="flex items-start gap-3 border-s-4 border-saffron bg-saffron/10 p-4 leading-8">
+                  <FaInfoCircle aria-hidden="true" className="mt-2 flex-none text-saffron" />
+                  <p>
+                    ارسال پیام از این فرم هنوز فعال نشده و پیام شما فرستاده نشد. لطفاً با شماره‌ی{' '}
+                    <a href={telHref(labels.phone)} dir="ltr" className="font-bold underline underline-offset-4">
+                      {labels.phone}
+                    </a>{' '}
+                    تماس بگیرید.
+                  </p>
+                </div>
+              ) : null}
+
+              <div>
+                <Button type="submit" icon={<FaPaperPlane aria-hidden="true" />}>
+                  {buttonText}
+                </Button>
+              </div>
+            </form>
+          </Tile>
+        </Reveal>
+      </section>
+    </>
   );
 }

@@ -1,184 +1,302 @@
-import { useState, useEffect, useContext } from 'react';
+import { useContext, useEffect, useRef, useState } from 'react';
+import { Link } from 'react-router-dom';
+import { FaAndroid, FaBolt, FaChevronLeft, FaChevronRight, FaLanguage, FaPhoneAlt, FaRegGem } from 'react-icons/fa';
 import image7 from '../assets/YY2.png';
-import { translateText } from '../utils/translateText';
+import logo from '../assets/logo.png';
 import { LanguageContext } from '../context/LanguageContext';
-import api from '../lib/api';
+import { useContent } from '../context/ContentContext';
+import useTranslated from '../lib/useTranslated';
+import {
+  DEFAULT_SERVICES,
+  DEFAULT_SKILLS,
+  HEADER_DEFAULTS,
+  HERO_DEFAULTS,
+  asList,
+  phrases,
+  sentences,
+  serviceIcon,
+  textOf,
+} from '../lib/helpers';
+import Tile from '../components/Tile';
+import Button from '../components/Button';
+import Reveal from '../components/Reveal';
+import ServiceTile from '../components/ServiceTile';
+import TechRibbon from '../components/TechRibbon';
+import CtaBand from '../components/CtaBand';
+import { StarHalo, StarMark } from '../components/Star';
 
-const projects = [
-  {
-    title: 'اپلیکیشن های اندرویدی',
-    desc: 'مجموعه نرم فزاری های ساخته شده برای گوشی ها و تبلت ها',
-    link: '/android',
-    image: image7 ,
-  },
-  {
-    title: 'سایت های طراحی شده',
-    desc: 'سایت شخصی چندزبانه با React و Tailwind',
-    link: 'https://arshamai.com',
-  },
-];
-
-const projects2 = [
-  { title: '  ', desc: ' ', link: '#' },
-  { title: '  ', desc: '', link: '#' },
-  { title: '  ', desc: '', link: '#' },
-];
+const PILLAR_ICONS = [FaBolt, FaLanguage, FaRegGem];
+const PILLAR_COLUMNS = { 2: 'md:grid-cols-2', 3: 'md:grid-cols-3', 4: 'md:grid-cols-4' };
 
 export default function Home() {
-  const [current, setCurrent] = useState(0);
-  const [translated, setTranslated] = useState('');
-  const [loading, setLoading] = useState(true);
-  const [images, setImages] = useState([]);
-  const [pageContent, setPageContent] = useState({
-    card1: 'برنامه‌نویسی برای کسب‌ وکارهایی مثل فروشگاه‌های آنلاین، شرکت‌های خدماتی، آموزشگاه‌ها و استارتاپ‌ها یه ابزار قدرتمنده. با طراحی نرم‌ افزار اختصاصی و اتوماسیون، می‌تونی سرعت، دقت و درآمدت رو چند برابر کنی.',
-    card2: ' با آرشام، آینده‌ی دیجیتال کسب‌وکار خودت رو بساز. طراحی سریع، ترجمه هوشمند، و تجربه کاربری بی‌نقص',
-  });
+  const { content } = useContent();
   const { lang } = useContext(LanguageContext);
 
-  useEffect(() => {
-    api.get('/content').then((res) => {
-      const hero = res.data && res.data.hero;
-      if (hero) {
-        setPageContent((prev) => ({
-          card1: hero.card1 || prev.card1,
-          card2: hero.card2 || prev.card2,
-        }));
-        if (Array.isArray(hero.sliderImages) && hero.sliderImages.length > 0) {
-          setImages(hero.sliderImages);
-        }
-      }
-    }).catch((err) => console.error('خطا در لود محتوای Home:', err));
-  }, []);
+  const hero = content.hero || {};
+  const labels = { ...HEADER_DEFAULTS, ...(content.header || {}) };
+  const card1 = textOf(hero.card1) || HERO_DEFAULTS.card1;
+  const card2 = textOf(hero.card2) || HERO_DEFAULTS.card2;
+  const lines = sentences(card2);
 
-  useEffect(() => {
-    setLoading(true);
-    translateText('  خوش آمدید Arshamai  به  ', lang)
-      .then((result) => {
-        setTranslated(result);
-        setLoading(false);
-      })
-      .catch((err) => {
-        console.error('ترجمه شکست خورد:', err);
-        setTranslated('');
-        setLoading(false);
-      });
-  }, [lang]);
+  const headline = useTranslated((textOf(hero.title) || lines[0] || card2).replace(/[.]+$/, ''), lang);
+  const pitch = useTranslated(card1, lang);
+  const customPillars = asList(hero.pillars).map(textOf).filter(Boolean);
+  const pillars = customPillars.length ? customPillars : phrases(lines.slice(1).join(' '));
 
-  useEffect(() => {
-    if (images.length === 0) return;
-    const interval = setInterval(() => {
-      setCurrent((prev) => (prev + 1) % images.length);
-    }, 10000);
-    return () => clearInterval(interval);
-  }, [images]);
+  const slides = asList(hero.sliderImages).map(textOf).filter(Boolean);
+  const services = asList(content.services, DEFAULT_SERVICES).map(textOf).filter(Boolean);
+  const skills = asList((content.about || {}).skills, DEFAULT_SKILLS).map(textOf).filter(Boolean);
 
   return (
-    <div
-      className="flex flex-col items-center justify-center min-h-screen px-4 bg-gradient-to-br from-[#e0eafc] to-[#cfdef3] dark:from-gray-800 dark:to-gray-900"
-    >
-      <div className="text-center mt-10 mb-10">
-        <h1 className="text-3xl font-bold text-blue-700 dark:text-blue-400">
-          {loading ? '...' : translated}
-        </h1>
-      </div>
-
-      <div className="relative w-full max-w-[1300px] h-[650px] overflow-hidden rounded-lg shadow-2xl">
-        {images.map((img, index) => (
-          <img
-            key={index}
-            src={img}
-            alt={`Slide ${index + 1}`}
-            className={`absolute top-0 left-0 w-full h-full object-cover transition-opacity duration-1000 ${
-              index === current ? 'opacity-100 z-10' : 'opacity-0 z-0'
-            }`}
-          />
-        ))}
-      </div>
-
-      <div className="mt-16 grid grid-cols-1 md:grid-cols-2 gap-6 max-w-4xl w-full">
-        <div className="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-6">
-          <p className="text-gray-700 dark:text-gray-200 text-lg leading-relaxed">
-            {pageContent.card1}
-          </p>
-        </div>
-
-        <div className="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-6 flex items-center justify-center">
-          <p className="text-gray-700 dark:text-gray-200 text-lg leading-relaxed text-center">
-            {pageContent.card2}
-          </p>
-        </div>
-      </div>
-
-      <div className="w-full flex justify-center my-12">
-        <hr className="border-t-2 border-red-700 dark:border-red-500 w-3/4" />
-      </div>
-
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 gap-8">
-        {projects.map((p, i) => (
-          <a
-            key={i}
-            href={p.link}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="block"
-          >
-            <div
-              className="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-6 hover:shadow-xl transition duration-400 flex flex-col sm:flex-row gap-6 cursor-pointer max-w-3xl mx-auto"
+    <>
+      <section className="relative">
+        <div className="container-x grid items-center gap-16 pb-16 pt-10 md:pt-14 lg:grid-cols-[1.02fr_1fr] lg:gap-10 lg:pb-24">
+          <div className="relative z-10">
+            <h1 className="hero-in font-display text-[clamp(2.1rem,5vw,3.8rem)] font-extrabold leading-[1.38]">{headline}</h1>
+            <p
+              className="hero-in mt-7 max-w-xl text-lg leading-9 text-muted md:text-[1.2rem] md:leading-10"
+              style={{ '--d': '140ms' }}
             >
-              {p.image && (
+              {pitch}
+            </p>
+            <div className="hero-in mt-10 flex flex-wrap items-center gap-4" style={{ '--d': '280ms' }}>
+              <Button to="/contact" icon={<FaPhoneAlt aria-hidden="true" />}>
+                تماس با آرشام
+              </Button>
+              <Button to="/portfolio" variant="ghost">
+                دیدن نمونه‌کارها
+              </Button>
+            </div>
+          </div>
+
+          <div className="hero-in" style={{ '--d': '220ms' }}>
+            <HeroShowcase slides={slides} chips={services.slice(0, 2)} />
+          </div>
+        </div>
+      </section>
+
+      <TechRibbon items={skills} />
+
+      {pillars.length >= 2 && pillars.length <= 4 ? (
+        <section className="container-x pt-20" aria-label="ویژگی‌ها">
+          <Reveal>
+            <Tile
+              cut={26}
+              faceClassName={`grid divide-y divide-line/60 md:divide-x md:divide-x-reverse md:divide-y-0 ${PILLAR_COLUMNS[pillars.length]}`}
+            >
+              {pillars.map((text, index) => {
+                const Icon = PILLAR_ICONS[index] || FaRegGem;
+                return (
+                  <div key={text} className="flex items-center gap-5 p-7 md:p-9">
+                    <span className="icon-cell">
+                      <Icon aria-hidden="true" />
+                    </span>
+                    <p className="font-display text-lg font-bold leading-8 md:text-xl">{text}</p>
+                  </div>
+                );
+              })}
+            </Tile>
+          </Reveal>
+        </section>
+      ) : null}
+
+      <section className="container-x pt-24">
+        <div className="flex flex-wrap items-end justify-between gap-4">
+          <Reveal as="h2" className="font-display text-[clamp(1.7rem,3vw,2.3rem)] font-extrabold">
+            {labels.services}
+          </Reveal>
+          <Link to="/services" className="font-semibold text-lapis underline-offset-8 transition hover:underline dark:text-turq">
+            همه‌ی خدمات
+          </Link>
+        </div>
+        <div className="mt-10 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
+          {services.slice(0, 6).map((name, index) => (
+            <Reveal key={name} delay={index * 70} className="h-full">
+              <ServiceTile name={name} />
+            </Reveal>
+          ))}
+        </div>
+      </section>
+
+      <section className="container-x pt-24">
+        <Reveal as="h2" className="font-display text-[clamp(1.7rem,3vw,2.3rem)] font-extrabold">
+          {labels.portfolio}
+        </Reveal>
+        <div className="mt-10 grid gap-6 lg:grid-cols-[7fr_5fr]">
+          <Reveal className="h-full">
+            <Tile as={Link} to="/android" hover cut={30} className="group h-full" faceClassName="grid h-full sm:grid-cols-[1fr_1.15fr]">
+              <div className="relative min-h-[17rem] overflow-hidden bg-raised">
                 <img
-                  src={p.image} 
-                  alt={p.title}
-                  className="w-full sm:w-2/3 h-auto rounded-lg object-cover"
+                  src={image7}
+                  alt="نمونه‌ی رابط کاربری اپلیکیشن اندرویدی"
+                  className="absolute inset-0 h-full w-full object-cover transition duration-700 group-hover:scale-105"
                 />
-              )}
-              <div className="flex flex-col justify-between sm:w-2/3">
-                <h3 className="text-xl font-semibold text-blue-600 dark:text-blue-400 mb-2">{p.title}</h3>
-                <p className="text-gray-700 dark:text-gray-200 text-sm leading-relaxed">{p.desc}</p>
-                <span className="mt-4 text-sm text-blue-500 dark:text-blue-300 hover:underline">
-                  مشاهده پروژه →
+              </div>
+              <div className="flex flex-col p-8">
+                <span className="icon-cell">
+                  <FaAndroid aria-hidden="true" />
                 </span>
+                <h3 className="mt-6 font-display text-2xl font-bold leading-10">اپلیکیشن‌های اندرویدی</h3>
+                <p className="mt-3 leading-8 text-muted">مجموعه نرم‌افزارهای ساخته‌شده برای گوشی‌ها و تبلت‌ها</p>
+                <span className="mt-auto pt-8 font-semibold text-lapis dark:text-turq">مشاهده‌ی اپلیکیشن‌ها</span>
+              </div>
+            </Tile>
+          </Reveal>
+
+          <Reveal delay={120} className="h-full">
+            <Tile as={Link} to="/portfolio" hover cut={30} className="group h-full" faceClassName="flex h-full flex-col">
+              <BrowserArt />
+              <div className="flex flex-1 flex-col p-8">
+                <h3 className="font-display text-2xl font-bold leading-10">سایت‌های طراحی‌شده</h3>
+                <p className="mt-3 leading-8 text-muted">سایت شخصی چندزبانه با React و Tailwind</p>
+                <span className="mt-auto pt-8 font-semibold text-lapis dark:text-turq">مشاهده‌ی نمونه‌کارها</span>
+              </div>
+            </Tile>
+          </Reveal>
+        </div>
+      </section>
+
+      <CtaBand />
+    </>
+  );
+}
+
+function HeroShowcase({ slides, chips }) {
+  const [index, setIndex] = useState(0);
+  const [paused, setPaused] = useState(false);
+  const touchStart = useRef(null);
+  const count = slides.length;
+
+  useEffect(() => {
+    setIndex(0);
+  }, [count]);
+
+  useEffect(() => {
+    if (count < 2 || paused) return undefined;
+    const timer = window.setInterval(() => setIndex((current) => (current + 1) % count), 6000);
+    return () => window.clearInterval(timer);
+  }, [count, paused]);
+
+  const go = (step) => setIndex((current) => (current + step + count) % count);
+
+  const onTouchStart = (event) => {
+    touchStart.current = event.touches[0].clientX;
+  };
+
+  const onTouchEnd = (event) => {
+    if (touchStart.current == null) return;
+    const delta = event.changedTouches[0].clientX - touchStart.current;
+    touchStart.current = null;
+    if (Math.abs(delta) > 40) go(delta > 0 ? 1 : -1);
+  };
+
+  return (
+    <div className="relative mx-auto w-full max-w-[38rem] py-8">
+      <StarHalo className="absolute left-1/2 top-1/2 aspect-square w-[106%] -translate-x-1/2 -translate-y-1/2" />
+
+      <Tile cut={30} className="relative" faceClassName="p-2.5">
+        <div
+          className="relative aspect-[16/10] overflow-hidden bg-bg"
+          role="group"
+          aria-roledescription="اسلایدر"
+          aria-label="تصاویر معرفی آرشام"
+          onMouseEnter={() => setPaused(true)}
+          onMouseLeave={() => setPaused(false)}
+          onFocus={() => setPaused(true)}
+          onBlur={() => setPaused(false)}
+          onTouchStart={onTouchStart}
+          onTouchEnd={onTouchEnd}
+        >
+          {count ? (
+            slides.map((src, slideIndex) => (
+              <div
+                key={`${src}-${slideIndex}`}
+                className={`absolute inset-0 transition-opacity duration-1000 ${slideIndex === index ? 'opacity-100' : 'opacity-0'}`}
+                aria-hidden={slideIndex === index ? undefined : 'true'}
+              >
+                <img src={src} alt="" aria-hidden="true" className="absolute inset-0 h-full w-full scale-110 object-cover opacity-60 blur-2xl" />
+                <img
+                  src={src}
+                  alt={`تصویر معرفی آرشام، ${slideIndex + 1} از ${count}`}
+                  className={`relative h-full w-full object-contain transition-transform duration-[6000ms] ease-linear ${
+                    slideIndex === index ? 'scale-[1.04]' : 'scale-100'
+                  }`}
+                />
+              </div>
+            ))
+          ) : (
+            <div className="tile-night grid h-full place-items-center bg-[#0b1a4c]">
+              <div className="flex flex-col items-center gap-5">
+                <StarMark size={72} className="spin-slow text-[#40d6c6]" />
+                <img src={logo} alt="آرشام" className="w-32" />
               </div>
             </div>
-          </a>
-        ))}
-      </div>
+          )}
+        </div>
 
-      <div className="w-full flex justify-center my-12">
-        <hr className="border-t-2 border-red-700 dark:border-red-500 w-3/4" />
-      </div>
-
-      <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-2 gap-8">
-        {projects2.map((p, i) => (
-          <a
-            key={i}
-            href={p.link}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="block"
-          >
-            <div
-              className="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-6 hover:shadow-xl transition duration-400 flex flex-col sm:flex-row gap-6 cursor-pointer max-w-3xl mx-auto"
-            >
-              {p.image && (
-                <img
-                  src={p.image} 
-                  alt={p.title}
-                  className="w-full sm:w-2/3 h-auto rounded-lg object-cover"
+        {count > 1 ? (
+          <div className="flex items-center justify-between gap-4 px-2 pb-1.5 pt-3.5">
+            <div className="flex items-center gap-2">
+              {slides.map((src, slideIndex) => (
+                <button
+                  key={`dot-${src}-${slideIndex}`}
+                  type="button"
+                  onClick={() => setIndex(slideIndex)}
+                  aria-label={`نمایش تصویر ${slideIndex + 1}`}
+                  aria-current={slideIndex === index ? 'true' : undefined}
+                  className={`h-1.5 transition-all duration-500 ${slideIndex === index ? 'w-8 bg-saffron' : 'w-3 bg-line hover:bg-muted'}`}
                 />
-              )}
-              <div className="flex flex-col justify-between sm:w-2/3">
-                <h3 className="text-xl font-semibold text-blue-600 dark:text-blue-400 mb-2">{p.title}</h3>
-                <p className="text-gray-700 dark:text-gray-200 text-sm leading-relaxed">{p.desc}</p>
-                <span className="mt-4 text-sm text-blue-500 dark:text-blue-300 hover:underline">
-                  مشاهده پروژه →
-                </span>
-              </div>
+              ))}
             </div>
-          </a>
-        ))}
-      </div>
+            <div className="flex items-center gap-2">
+              <Button variant="icon" onClick={() => go(-1)} aria-label="تصویر قبلی" icon={<FaChevronRight aria-hidden="true" />} />
+              <Button variant="icon" onClick={() => go(1)} aria-label="تصویر بعدی" icon={<FaChevronLeft aria-hidden="true" />} />
+            </div>
+          </div>
+        ) : null}
+      </Tile>
 
+      {chips.map((name, chipIndex) => {
+        const Icon = serviceIcon(name);
+        return (
+          <Tile
+            key={name}
+            cut={9}
+            className={`bob absolute z-20 hidden sm:flex ${chipIndex === 0 ? '-top-1 end-4' : 'bottom-2 start-[-1rem]'}`}
+            style={{ animationDelay: `${chipIndex * -3.5}s` }}
+            faceClassName="flex items-center gap-2.5 px-4 py-2.5 text-sm font-semibold"
+            aria-hidden="true"
+          >
+            <Icon className="text-turq" />
+            <span>{name}</span>
+          </Tile>
+        );
+      })}
+    </div>
+  );
+}
+
+function BrowserArt() {
+  return (
+    <div aria-hidden="true" className="relative overflow-hidden bg-raised/70 px-8 pt-8">
+      <div className="mx-auto max-w-sm translate-y-3 border border-line/70 bg-surface shadow-[0_24px_40px_-24px_rgb(var(--c-shadow)/0.6)] transition duration-700 group-hover:translate-y-0">
+        <div className="flex items-center gap-1.5 border-b border-line/70 px-3 py-2.5" dir="ltr">
+          <span className="h-2 w-2 rounded-full bg-saffron" />
+          <span className="h-2 w-2 rounded-full bg-turq" />
+          <span className="h-2 w-2 rounded-full bg-lapis" />
+          <span className="ms-3 h-2 flex-1 rounded bg-raised" />
+        </div>
+        <div className="grid gap-3 p-4">
+          <div className="h-16 bg-gradient-to-l from-lapis/80 via-lapis/50 to-turq/60" />
+          <div className="grid grid-cols-3 gap-2">
+            <div className="h-10 bg-raised" />
+            <div className="h-10 bg-raised" />
+            <div className="h-10 bg-raised" />
+          </div>
+          <div className="h-2 w-2/3 rounded bg-raised" />
+          <div className="h-2 w-1/2 rounded bg-raised" />
+        </div>
+      </div>
     </div>
   );
 }
