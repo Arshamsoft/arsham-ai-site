@@ -2,8 +2,9 @@ import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { FaRegCalendar, FaRegClock } from 'react-icons/fa';
 import api from '../lib/api';
-import { useContent } from '../context/ContentContext';
-import { HEADER_DEFAULTS, excerptOf, formatDate, listFrom, readingMinutes, faNumber } from '../lib/helpers';
+import { useI18n } from '../context/LanguageContext';
+import useSiteLabels from '../i18n/useSiteLabels';
+import { excerptOf, listFrom, readingMinutes } from '../lib/helpers';
 import PageHead from '../components/PageHead';
 import Tile from '../components/Tile';
 import Button from '../components/Button';
@@ -12,8 +13,8 @@ import SkeletonGrid from '../components/SkeletonGrid';
 import StateMessage from '../components/StateMessage';
 
 export default function Blog() {
-  const { content } = useContent();
-  const labels = { ...HEADER_DEFAULTS, ...(content.header || {}) };
+  const { t } = useI18n();
+  const { nav } = useSiteLabels();
   const [articles, setArticles] = useState([]);
   const [status, setStatus] = useState('loading');
   const [attempt, setAttempt] = useState(0);
@@ -38,29 +39,25 @@ export default function Blog() {
 
   return (
     <>
-      <PageHead title={labels.blog} subtitle="یادداشت‌ها و آموزش‌های آرشام درباره‌ی برنامه‌نویسی و نرم‌افزار" />
+      <PageHead title={nav('blog')} subtitle={t('blog.subtitle')} />
 
       <section className="container-x pb-24">
         {status === 'loading' ? <SkeletonGrid count={4} className="md:grid-cols-2" /> : null}
 
         {status === 'error' ? (
           <StateMessage
-            title="مطالب بارگذاری نشد"
-            text="اتصال اینترنت را بررسی کنید و دوباره امتحان کنید."
+            title={t('blog.error')}
+            text={t('ui.loadError')}
             action={
               <Button variant="ghost" onClick={() => setAttempt((n) => n + 1)}>
-                تلاش دوباره
+                {t('ui.retry')}
               </Button>
             }
           />
         ) : null}
 
         {status === 'ready' && !articles.length ? (
-          <StateMessage
-            title="هنوز مطلبی منتشر نشده"
-            text="به‌زودی اولین مطلب اینجا قرار می‌گیرد. تا آن زمان، خدمات ما را ببینید."
-            action={<Button to="/services">دیدن خدمات</Button>}
-          />
+          <StateMessage title={t('blog.empty')} text={t('blog.emptyText')} action={<Button to="/services">{t('blog.seeServices')}</Button>} />
         ) : null}
 
         {articles.length ? (
@@ -78,7 +75,8 @@ export default function Blog() {
 }
 
 function ArticleCard({ article, featured }) {
-  const date = formatDate(article.createdAt);
+  const { t, tr, date, number } = useI18n();
+  const published = date(article.createdAt);
   return (
     <Tile
       as={Link}
@@ -96,19 +94,19 @@ function ArticleCard({ article, featured }) {
         )}
       </div>
       <div className="flex flex-col p-7 md:p-8">
-        {article.category ? <span className="chip self-start">{article.category}</span> : null}
-        <h2 className={`mt-4 font-display font-bold ${featured ? 'text-2xl leading-[1.8] md:text-3xl' : 'text-xl leading-9'}`}>{article.title}</h2>
-        <p className="mt-3 leading-8 text-muted">{excerptOf(article, featured ? 260 : 150)}</p>
+        {article.category ? <span className="chip self-start">{tr(article.category)}</span> : null}
+        <h2 className={`mt-4 font-display font-bold ${featured ? 'text-2xl leading-[1.8] md:text-3xl' : 'text-xl leading-9'}`}>{tr(article.title)}</h2>
+        <p className="mt-3 leading-8 text-muted">{tr(excerptOf(article, featured ? 260 : 150))}</p>
         <div className="mt-auto flex flex-wrap items-center gap-5 pt-6 text-sm text-muted">
-          {date ? (
+          {published ? (
             <span className="inline-flex items-center gap-2">
               <FaRegCalendar aria-hidden="true" />
-              {date}
+              {published}
             </span>
           ) : null}
           <span className="inline-flex items-center gap-2">
             <FaRegClock aria-hidden="true" />
-            {faNumber(readingMinutes(article.content))} دقیقه مطالعه
+            {t('blog.minutes', { n: number(readingMinutes(article.content)) })}
           </span>
         </div>
       </div>

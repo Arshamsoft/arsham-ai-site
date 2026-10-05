@@ -1,9 +1,11 @@
 import { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
-import { FaRegCalendar, FaRegClock, FaUserEdit } from 'react-icons/fa';
+import { FaLanguage, FaRegCalendar, FaRegClock, FaUserEdit } from 'react-icons/fa';
 import api from '../lib/api';
-import { useContent } from '../context/ContentContext';
-import { HEADER_DEFAULTS, faNumber, formatDate, readingMinutes } from '../lib/helpers';
+import { useI18n } from '../context/LanguageContext';
+import useSiteLabels from '../i18n/useSiteLabels';
+import { readingMinutes, stripHtml } from '../lib/helpers';
+import { hasPersian } from '../i18n/localTranslate';
 import PageHead from '../components/PageHead';
 import Tile from '../components/Tile';
 import Button from '../components/Button';
@@ -11,8 +13,8 @@ import StateMessage from '../components/StateMessage';
 
 export default function BlogPost() {
   const { id } = useParams();
-  const { content } = useContent();
-  const labels = { ...HEADER_DEFAULTS, ...(content.header || {}) };
+  const { t, tr, trHtml, date, number, lang } = useI18n();
+  const { nav } = useSiteLabels();
   const [article, setArticle] = useState(null);
   const [status, setStatus] = useState('loading');
 
@@ -47,46 +49,55 @@ export default function BlogPost() {
   if (status === 'missing' || !article) {
     return (
       <>
-        <PageHead title="مقاله پیدا نشد" trail={[{ to: '/blog', label: labels.blog }]} />
+        <PageHead title={t('blog.notFound')} trail={[{ to: '/blog', label: nav('blog') }]} />
         <section className="container-x pb-24">
           <StateMessage
-            title="این مقاله وجود ندارد یا حذف شده است"
-            text="فهرست مطالب وبلاگ را ببینید."
-            action={<Button to="/blog">بازگشت به وبلاگ</Button>}
+            title={t('blog.notFoundTitle')}
+            text={t('blog.notFoundText')}
+            action={<Button to="/blog">{t('blog.back')}</Button>}
           />
         </section>
       </>
     );
   }
 
-  const date = formatDate(article.createdAt);
+  const published = date(article.createdAt);
   const tags = Array.isArray(article.tags) ? article.tags.filter(Boolean) : [];
+  const body = trHtml(article.content || '');
+  const persianOnly = lang !== 'fa' && hasPersian(stripHtml(body));
 
   return (
     <article>
-      <PageHead title={article.title} trail={[{ to: '/blog', label: labels.blog }]} />
+      <PageHead title={tr(article.title)} trail={[{ to: '/blog', label: nav('blog') }]} />
 
       <div className="container-x pb-24">
         <div className="max-w-3xl">
           <div className="flex flex-wrap items-center gap-5 text-sm text-muted">
-            {article.category ? <span className="chip">{article.category}</span> : null}
-            {date ? (
+            {article.category ? <span className="chip">{tr(article.category)}</span> : null}
+            {published ? (
               <span className="inline-flex items-center gap-2">
                 <FaRegCalendar aria-hidden="true" />
-                {date}
+                {published}
               </span>
             ) : null}
             <span className="inline-flex items-center gap-2">
               <FaRegClock aria-hidden="true" />
-              {faNumber(readingMinutes(article.content))} دقیقه مطالعه
+              {t('blog.minutes', { n: number(readingMinutes(article.content)) })}
             </span>
             {article.author ? (
               <span className="inline-flex items-center gap-2">
                 <FaUserEdit aria-hidden="true" />
-                {article.author}
+                {tr(article.author)}
               </span>
             ) : null}
           </div>
+
+          {persianOnly ? (
+            <p className="mt-6 inline-flex items-center gap-2 text-sm text-muted">
+              <FaLanguage aria-hidden="true" className="text-turq" />
+              {t('blog.persianOnly')}
+            </p>
+          ) : null}
 
           {article.image ? (
             <Tile cut={28} className="mt-8" faceClassName="p-2.5">
@@ -94,13 +105,13 @@ export default function BlogPost() {
             </Tile>
           ) : null}
 
-          <div className="article-content mt-10" dangerouslySetInnerHTML={{ __html: article.content || '' }} />
+          <div className="article-content mt-10" dangerouslySetInnerHTML={{ __html: body }} />
 
           {tags.length ? (
-            <ul className="mt-12 flex flex-wrap gap-2" aria-label="برچسب‌ها">
+            <ul className="mt-12 flex flex-wrap gap-2" aria-label={t('blog.tags')}>
               {tags.map((tag) => (
                 <li key={tag} className="chip">
-                  #{tag}
+                  #{tr(tag)}
                 </li>
               ))}
             </ul>
@@ -108,7 +119,7 @@ export default function BlogPost() {
 
           <div className="mt-12 border-t border-line/60 pt-8">
             <Button to="/blog" variant="ghost">
-              بازگشت به وبلاگ
+              {t('blog.back')}
             </Button>
           </div>
         </div>

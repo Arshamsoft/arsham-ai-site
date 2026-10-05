@@ -1,7 +1,8 @@
 import { useEffect, useMemo, useState } from 'react';
 import api from '../lib/api';
-import { useContent } from '../context/ContentContext';
-import { HEADER_DEFAULTS, listFrom } from '../lib/helpers';
+import { useI18n } from '../context/LanguageContext';
+import useSiteLabels from '../i18n/useSiteLabels';
+import { listFrom } from '../lib/helpers';
 import PageHead from '../components/PageHead';
 import Reveal from '../components/Reveal';
 import Button from '../components/Button';
@@ -11,8 +12,8 @@ import StateMessage from '../components/StateMessage';
 import CtaBand from '../components/CtaBand';
 
 export default function Portfolio() {
-  const { content } = useContent();
-  const labels = { ...HEADER_DEFAULTS, ...(content.header || {}) };
+  const { t, tr } = useI18n();
+  const { nav } = useSiteLabels();
   const [items, setItems] = useState([]);
   const [status, setStatus] = useState('loading');
   const [attempt, setAttempt] = useState(0);
@@ -41,13 +42,13 @@ export default function Portfolio() {
 
   return (
     <>
-      <PageHead title={labels.portfolio} subtitle="بخشی از پروژه‌هایی که طراحی و اجرا کرده‌ایم" />
+      <PageHead title={nav('portfolio')} subtitle={t('page.projectsSubtitle')} />
 
       <section className="container-x">
         {status === 'ready' && categories.length > 1 ? (
-          <div className="mb-10 flex flex-wrap gap-2" role="group" aria-label="دسته‌بندی">
+          <div className="mb-10 flex flex-wrap gap-2" role="group" aria-label={t('ui.category')}>
             <button type="button" className={`chip${category ? '' : ' chip-on'}`} onClick={() => setCategory('')} aria-pressed={!category}>
-              همه
+              {t('ui.all')}
             </button>
             {categories.map((name) => (
               <button
@@ -57,7 +58,7 @@ export default function Portfolio() {
                 onClick={() => setCategory(name)}
                 aria-pressed={category === name}
               >
-                {name}
+                {tr(name)}
               </button>
             ))}
           </div>
@@ -67,11 +68,11 @@ export default function Portfolio() {
 
         {status === 'error' ? (
           <StateMessage
-            title="نمونه‌کارها بارگذاری نشد"
-            text="اتصال اینترنت را بررسی کنید و دوباره امتحان کنید."
+            title={t('page.projectsError')}
+            text={t('ui.loadError')}
             action={
               <Button variant="ghost" onClick={() => setAttempt((n) => n + 1)}>
-                تلاش دوباره
+                {t('ui.retry')}
               </Button>
             }
           />
@@ -79,9 +80,9 @@ export default function Portfolio() {
 
         {status === 'ready' && !items.length ? (
           <StateMessage
-            title="هنوز نمونه‌کاری ثبت نشده"
-            text="اپلیکیشن‌های اندرویدی ما را ببینید."
-            action={<Button to="/android">اپلیکیشن‌های اندرویدی</Button>}
+            title={t('page.projectsEmpty')}
+            text={t('page.projectsEmptyText')}
+            action={<Button to="/android">{t('nav.android')}</Button>}
           />
         ) : null}
 

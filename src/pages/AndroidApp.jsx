@@ -3,6 +3,8 @@ import image1 from '../assets/YY.png';
 import image2 from '../assets/p2.png';
 import video1 from '../assets/v1.mp4';
 import api from '../lib/api';
+import { useI18n } from '../context/LanguageContext';
+import useSiteLabels from '../i18n/useSiteLabels';
 import { listFrom } from '../lib/helpers';
 import PageHead from '../components/PageHead';
 import Reveal from '../components/Reveal';
@@ -25,6 +27,8 @@ const FALLBACK = [
 ];
 
 export default function AndroidApp() {
+  const { t } = useI18n();
+  const { nav } = useSiteLabels();
   const [items, setItems] = useState(null);
 
   useEffect(() => {
@@ -45,7 +49,7 @@ export default function AndroidApp() {
 
   return (
     <>
-      <PageHead title="اپلیکیشن‌های اندرویدی" subtitle="مجموعه نرم‌افزارهای ساخته‌شده برای گوشی‌ها و تبلت‌ها" trail={[{ to: '/portfolio', label: 'نمونه‌کارها' }]} />
+      <PageHead title={t('nav.android')} subtitle={t('home.androidText')} trail={[{ to: '/portfolio', label: nav('portfolio') }]} />
       <section className="container-x">
         {items ? (
           <div className="grid gap-6 md:grid-cols-2 xl:grid-cols-3">

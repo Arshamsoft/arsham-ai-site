@@ -19,13 +19,12 @@ import Background from './components/Background';
 import ScrollProgress from './components/ScrollProgress';
 import Splash, { shouldShowSplash } from './components/Splash';
 import VisitTracker from './components/VisitTracker';
+import { logoMarkSvgString } from './components/Logo';
 
-// جهت راست‌به‌چپ و تم ذخیره‌شده، قبل از اولین رندر (بدون پرش رنگ)
+// تم ذخیره‌شده و آیکون تب مرورگر، قبل از اولین رندر (جهت و زبان صفحه در LanguageContext تنظیم می‌شه)
 (function prepareDocument() {
   if (typeof document === 'undefined') return;
   const root = document.documentElement;
-  root.setAttribute('dir', 'rtl');
-  root.setAttribute('lang', 'fa');
   let theme = 'dark';
   try {
     const saved = window.localStorage.getItem('theme');
@@ -35,6 +34,16 @@ import VisitTracker from './components/VisitTracker';
   }
   root.classList.toggle('dark', theme === 'dark');
   root.style.setProperty('--hero-delay', shouldShowSplash() ? '1500ms' : '0ms');
+
+  const icon = `data:image/svg+xml,${encodeURIComponent(logoMarkSvgString())}`;
+  let link = document.querySelector('link[rel="icon"][type="image/svg+xml"]');
+  if (!link) {
+    link = document.createElement('link');
+    link.rel = 'icon';
+    link.type = 'image/svg+xml';
+    document.head.appendChild(link);
+  }
+  link.href = icon;
 })();
 
 function Layout() {

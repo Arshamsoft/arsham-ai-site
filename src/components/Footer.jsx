@@ -1,37 +1,35 @@
 import { Link } from 'react-router-dom';
 import { FaClock, FaMapMarkerAlt, FaPhoneAlt } from 'react-icons/fa';
-import logo from '../assets/logo.png';
 import { useContent } from '../context/ContentContext';
-import {
-  DEFAULT_LICENSES,
-  DEFAULT_SERVICES,
-  HEADER_DEFAULTS,
-  asList,
-  socialIcon,
-  socialLinks,
-  telHref,
-  textOf,
-} from '../lib/helpers';
-import Tile from './Tile';
+import { useI18n } from '../context/LanguageContext';
+import useSiteLabels from '../i18n/useSiteLabels';
+import { DEFAULT_LICENSES, DEFAULT_SERVICES, asList, socialIcon, socialLinks, telHref, textOf } from '../lib/helpers';
+import Logo from './Logo';
+
+const DEFAULT_COPYRIGHT = /^©\s*\d{4}\s*Arshamai\.com\s*\|\s*طراحی و توسعه توسط ارشام\s*$/;
 
 export default function Footer() {
   const { content } = useContent();
+  const { t, tr } = useI18n();
+  const { nav, phone, hours, location } = useSiteLabels();
   const footer = content.footer || {};
-  const labels = { ...HEADER_DEFAULTS, ...(content.header || {}) };
   const socials = socialLinks(content.socialLinks);
   const services = asList(content.services, DEFAULT_SERVICES).map(textOf).filter(Boolean).slice(0, 8);
   const licenses = asList(footer.licenses, DEFAULT_LICENSES).map(textOf).filter(Boolean);
-  const copyright = footer.copyright || `© ${new Date().getFullYear()} Arshamai.com | طراحی و توسعه توسط ارشام`;
+  const year = new Date().getFullYear();
+  const savedCopyright = textOf(footer.copyright);
+  const copyright =
+    !savedCopyright || DEFAULT_COPYRIGHT.test(savedCopyright) ? t('footer.copyright', { year }) : tr(savedCopyright);
 
   const pages = [
-    { to: '/', label: labels.home },
-    { to: '/services', label: labels.services },
-    { to: '/portfolio', label: labels.portfolio },
-    { to: '/android', label: 'اپلیکیشن‌های اندرویدی' },
-    { to: '/shop', label: labels.shop },
-    { to: '/blog', label: labels.blog },
-    { to: '/about', label: labels.about },
-    { to: '/contact', label: labels.contact },
+    { to: '/', label: nav('home') },
+    { to: '/services', label: nav('services') },
+    { to: '/portfolio', label: nav('portfolio') },
+    { to: '/android', label: t('nav.android') },
+    { to: '/shop', label: nav('shop') },
+    { to: '/blog', label: nav('blog') },
+    { to: '/about', label: nav('about') },
+    { to: '/contact', label: nav('contact') },
   ];
 
   return (
@@ -40,10 +38,10 @@ export default function Footer() {
 
       <div className="container-x grid gap-12 py-16 sm:grid-cols-2 lg:grid-cols-[1.5fr_1fr_1.1fr_1.2fr]">
         <div>
-          <Tile as={Link} to="/" cut={10} tone="night" className="inline-flex" faceClassName="px-3 py-1.5" aria-label="آرشام، صفحه‌ی اصلی">
-            <img src={logo} alt="" className="h-10 w-auto" />
-          </Tile>
-          <p className="mt-6 max-w-xs leading-8 text-muted">طراحی، ساخت، اجرا و پشتیبانی انواع نرم افزارها از صفر تا صد</p>
+          <Link to="/" aria-label={t('ui.homeLink')} className="inline-flex text-[17px]">
+            <Logo size={54} />
+          </Link>
+          <p className="mt-6 max-w-xs leading-8 text-muted">{t('footer.blurb')}</p>
           {socials.length ? (
             <ul className="mt-6 flex flex-wrap gap-2">
               {socials.map((item) => {
@@ -68,7 +66,7 @@ export default function Footer() {
 
         <nav aria-labelledby="footer-pages">
           <h2 id="footer-pages" className="font-display text-base font-bold">
-            صفحه‌ها
+            {t('footer.pages')}
           </h2>
           <ul className="mt-5 grid gap-2.5">
             {pages.map((item) => (
@@ -82,12 +80,12 @@ export default function Footer() {
         </nav>
 
         <div>
-          <h2 className="font-display text-base font-bold">خدمات</h2>
+          <h2 className="font-display text-base font-bold">{t('footer.services')}</h2>
           <ul className="mt-5 grid gap-2.5">
             {services.map((name) => (
               <li key={name}>
                 <Link to="/services" className="text-muted transition hover:text-fg">
-                  {name}
+                  {tr(name)}
                 </Link>
               </li>
             ))}
@@ -95,21 +93,21 @@ export default function Footer() {
         </div>
 
         <div>
-          <h2 className="font-display text-base font-bold">ارتباط با ما</h2>
+          <h2 className="font-display text-base font-bold">{t('footer.contact')}</h2>
           <ul className="mt-5 grid gap-4 text-muted">
             <li>
-              <a href={telHref(labels.phone)} className="inline-flex items-center gap-3 transition hover:text-fg">
+              <a href={telHref(phone)} className="inline-flex items-center gap-3 transition hover:text-fg">
                 <FaPhoneAlt aria-hidden="true" className="text-turq" />
-                <span dir="ltr">{labels.phone}</span>
+                <span dir="ltr">{phone}</span>
               </a>
             </li>
             <li className="flex items-center gap-3">
               <FaMapMarkerAlt aria-hidden="true" className="flex-none text-turq" />
-              <span>{labels.location}</span>
+              <span>{location}</span>
             </li>
             <li className="flex items-start gap-3">
               <FaClock aria-hidden="true" className="mt-2 flex-none text-turq" />
-              <span className="leading-8">{labels.hours}</span>
+              <span className="leading-8">{hours}</span>
             </li>
           </ul>
         </div>
@@ -122,7 +120,7 @@ export default function Footer() {
             <ul className="flex flex-wrap gap-2">
               {licenses.map((name) => (
                 <li key={name} className="chip">
-                  {name}
+                  {tr(name)}
                 </li>
               ))}
             </ul>

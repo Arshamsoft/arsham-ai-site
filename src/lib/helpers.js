@@ -21,19 +21,6 @@ import {
 } from 'react-icons/fa';
 
 // مقدارهای پیش‌فرض؛ هرچی تو پنل ادمین ثبت بشه جای این‌ها رو می‌گیره
-export const HEADER_DEFAULTS = {
-  home: 'خانه',
-  services: 'خدمات',
-  portfolio: 'نمونه‌کارها',
-  shop: 'فروشگاه',
-  blog: 'وبلاگ',
-  about: 'درباره ما',
-  contact: 'تماس با ما',
-  phone: '09333807359',
-  location: 'ایران',
-  hours: 'ساعات پاسخگویی: شنبه تا چهارشنبه - 8 تا 17',
-};
-
 export const HERO_DEFAULTS = {
   card1:
     'برنامه‌نویسی برای کسب‌ وکارهایی مثل فروشگاه‌های آنلاین، شرکت‌های خدماتی، آموزشگاه‌ها و استارتاپ‌ها یه ابزار قدرتمنده. با طراحی نرم‌ افزار اختصاصی و اتوماسیون، می‌تونی سرعت، دقت و درآمدت رو چند برابر کنی.',
@@ -160,22 +147,6 @@ export function toLatinDigits(value = '') {
 
 export function telHref(phone = '') {
   return `tel:${toLatinDigits(phone).replace(/[^\d+]/g, '')}`;
-}
-
-export function faNumber(value) {
-  const number = Number(value || 0);
-  return Number.isFinite(number) ? number.toLocaleString('fa-IR') : '';
-}
-
-export function formatDate(value) {
-  if (!value) return '';
-  const date = new Date(value);
-  if (Number.isNaN(date.getTime())) return '';
-  try {
-    return date.toLocaleDateString('fa-IR', { year: 'numeric', month: 'long', day: 'numeric' });
-  } catch (e) {
-    return date.toLocaleDateString();
-  }
 }
 
 export function stripHtml(html = '') {

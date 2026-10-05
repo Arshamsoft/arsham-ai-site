@@ -35,6 +35,52 @@
     U+2010-2011, U+204F, U+2E41, U+FB50-FDFF, U+FE70-FE74, U+FE76-FEFC;
 }
 
+/* زبان‌های چپ‌به‌راست: Manrope برای متن (لاتین و سیریلیک)، Sora برای تیترها */
+@font-face {
+  font-family: 'Manrope Variable';
+  font-style: normal;
+  font-display: swap;
+  font-weight: 100 900;
+  src: url('./assets/fonts/manrope-latin-wght-normal.woff2') format('woff2-variations'), url('./assets/fonts/manrope-latin-wght-normal.woff2') format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+
+@font-face {
+  font-family: 'Manrope Variable';
+  font-style: normal;
+  font-display: swap;
+  font-weight: 100 900;
+  src: url('./assets/fonts/manrope-latin-ext-wght-normal.woff2') format('woff2-variations'), url('./assets/fonts/manrope-latin-ext-wght-normal.woff2') format('woff2');
+  unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF;
+}
+
+@font-face {
+  font-family: 'Manrope Variable';
+  font-style: normal;
+  font-display: swap;
+  font-weight: 100 900;
+  src: url('./assets/fonts/manrope-cyrillic-wght-normal.woff2') format('woff2-variations'), url('./assets/fonts/manrope-cyrillic-wght-normal.woff2') format('woff2');
+  unicode-range: U+0301, U+0400-045F, U+0490-0491, U+04B0-04B1, U+2116;
+}
+
+@font-face {
+  font-family: 'Sora Variable';
+  font-style: normal;
+  font-display: swap;
+  font-weight: 100 900;
+  src: url('./assets/fonts/sora-latin-wght-normal.woff2') format('woff2-variations'), url('./assets/fonts/sora-latin-wght-normal.woff2') format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+
+@font-face {
+  font-family: 'Sora Variable';
+  font-style: normal;
+  font-display: swap;
+  font-weight: 100 900;
+  src: url('./assets/fonts/sora-latin-ext-wght-normal.woff2') format('woff2-variations'), url('./assets/fonts/sora-latin-ext-wght-normal.woff2') format('woff2');
+  unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF;
+}
+
 @tailwind base;
 
 /* ─────────────────────────────────────────────
@@ -85,7 +131,7 @@ body {
   margin: 0;
   background-color: rgb(var(--c-bg));
   color: rgb(var(--c-fg));
-  font-family: 'Vazirmatn Variable', Vazirmatn, Tahoma, system-ui, sans-serif;
+  font-family: 'Vazirmatn Variable', Vazirmatn, system-ui, -apple-system, 'Segoe UI', Roboto, 'Noto Sans', Tahoma, sans-serif;
   font-size: 1.0625rem;
   line-height: 1.9;
   -webkit-font-smoothing: antialiased;
@@ -97,6 +143,32 @@ h1,
 h2,
 h3 {
   text-wrap: balance;
+}
+
+/* در زبان‌های چپ‌به‌راست، تایپوگرافی بین‌المللی */
+[dir='ltr'] body {
+  font-family: 'Manrope Variable', system-ui, -apple-system, 'Segoe UI', Roboto, 'Noto Sans', sans-serif;
+}
+
+[dir='ltr'] .font-display,
+[dir='ltr'] .article-content h1,
+[dir='ltr'] .article-content h2,
+[dir='ltr'] .article-content h3,
+[dir='ltr'] .article-content h4,
+[dir='ltr'] .cta-phone {
+  font-family: 'Sora Variable', 'Manrope Variable', system-ui, -apple-system, 'Segoe UI', Roboto, 'Noto Sans', sans-serif;
+  letter-spacing: -0.01em;
+}
+
+/* ژاپنی: شکستن خط در مرز عبارت‌ها؛ کره‌ای: کلمه‌ها نصفه نشن */
+:lang(ja) h1,
+:lang(ja) h2,
+:lang(ja) h3 {
+  word-break: auto-phrase;
+}
+
+:lang(ko) {
+  word-break: keep-all;
 }
 
 ::selection {
@@ -289,6 +361,7 @@ h3 {
 .nav-link {
   position: relative;
   display: inline-flex;
+  white-space: nowrap;
   padding: 0.55rem 0.85rem;
   font-weight: 600;
   color: rgb(var(--c-muted));
@@ -432,13 +505,14 @@ button.chip-on:hover {
 }
 
 .night-pattern {
+  --fade-dir: to left;
   position: absolute;
   inset: 0;
   background-color: rgb(64 214 198 / 0.13);
   -webkit-mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='88' height='88' viewBox='0 0 88 88' fill='none' stroke='black' stroke-width='1'%3E%3Crect x='22' y='22' width='44' height='44'/%3E%3Cpolygon points='44,12.9 75.1,44 44,75.1 12.9,44'/%3E%3Cpath d='M0 0L22 22M88 0L66 22M0 88L22 66M88 88L66 66M44 0V12.9M88 44H75.1M44 88V75.1M0 44H12.9'/%3E%3C/svg%3E"),
-    linear-gradient(to left, #000, transparent 70%);
+    linear-gradient(var(--fade-dir), #000, transparent 70%);
   mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='88' height='88' viewBox='0 0 88 88' fill='none' stroke='black' stroke-width='1'%3E%3Crect x='22' y='22' width='44' height='44'/%3E%3Cpolygon points='44,12.9 75.1,44 44,75.1 12.9,44'/%3E%3Cpath d='M0 0L22 22M88 0L66 22M0 88L22 66M88 88L66 66M44 0V12.9M88 44H75.1M44 88V75.1M0 44H12.9'/%3E%3C/svg%3E"),
-    linear-gradient(to left, #000, transparent 70%);
+    linear-gradient(var(--fade-dir), #000, transparent 70%);
   -webkit-mask-size: 88px 88px, 100% 100%;
   mask-size: 88px 88px, 100% 100%;
   -webkit-mask-composite: source-in;
@@ -453,6 +527,47 @@ button.chip-on:hover {
 
 .glow-lapis {
   background: radial-gradient(closest-side, rgb(var(--c-lapis) / 0.22), rgb(var(--c-lapis) / 0.06) 55%, transparent);
+}
+
+[dir='ltr'] .night-pattern {
+  --fade-dir: to right;
+}
+
+/* پرچم‌ها و منوی زبان */
+.flag {
+  width: 22px;
+  height: 16.5px;
+  flex: none;
+  object-fit: cover;
+  border-radius: 2px;
+  box-shadow: 0 0 0 1px rgb(var(--c-line) / 0.9);
+}
+
+.lang-option {
+  display: flex;
+  width: 100%;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.6rem 0.8rem;
+  border: 0;
+  background: transparent;
+  color: rgb(var(--c-muted));
+  font: inherit;
+  font-weight: 600;
+  text-align: start;
+  cursor: pointer;
+  transition: background-color 0.2s ease, color 0.2s ease;
+}
+
+.lang-option:hover,
+.lang-option.is-active {
+  background: rgb(var(--c-raised) / 0.7);
+  color: rgb(var(--c-fg));
+}
+
+/* نشان لوگو: کمی درخشش در تم تیره */
+.dark .logo-mark {
+  filter: drop-shadow(0 0 10px rgb(64 214 198 / 0.25));
 }
 
 /* نوار فناوری‌ها */
@@ -587,6 +702,11 @@ html.splash-lock body {
   animation-delay: 0.45s;
 }
 
+.splash-wordmark {
+  --c-fg: 236 241 255;
+  --c-turq: 64 214 198;
+}
+
 .splash-logo {
   animation: splash-pop 0.7s 0.6s cubic-bezier(0.2, 0.8, 0.2, 1) both;
 }
@@ -600,6 +720,11 @@ html.splash-lock body {
   height: 100%;
   transform-origin: right;
   background: linear-gradient(to left, #ffb432, #40d6c6);
+}
+
+[dir='ltr'] .splash-bar > span {
+  transform-origin: left;
+  background: linear-gradient(to right, #ffb432, #40d6c6);
   animation: grow-x 1.4s 0.2s cubic-bezier(0.65, 0, 0.35, 1) both;
 }
 

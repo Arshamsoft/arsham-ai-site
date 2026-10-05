@@ -3,11 +3,14 @@ import Tile from './Tile';
 import Button from './Button';
 import Reveal from './Reveal';
 import { useContent } from '../context/ContentContext';
-import { HEADER_DEFAULTS, socialLinks, telHref } from '../lib/helpers';
+import { useI18n } from '../context/LanguageContext';
+import useSiteLabels from '../i18n/useSiteLabels';
+import { socialLinks, telHref } from '../lib/helpers';
 
 export default function CtaBand() {
   const { content } = useContent();
-  const labels = { ...HEADER_DEFAULTS, ...(content.header || {}) };
+  const { t } = useI18n();
+  const { phone } = useSiteLabels();
   const telegram = socialLinks(content.socialLinks).find((item) => /telegram/i.test(String(item.platform)));
 
   return (
@@ -17,16 +20,12 @@ export default function CtaBand() {
           <div aria-hidden="true" className="night-pattern" />
           <div className="relative grid items-center gap-10 md:grid-cols-[1.3fr_1fr]">
             <div>
-              <h2 className="font-display text-[clamp(1.7rem,3.4vw,2.5rem)] font-extrabold leading-[1.5]">
-                پروژه‌تان را با آرشام شروع کنید
-              </h2>
-              <p className="mt-4 max-w-lg text-lg leading-9 text-[#b9c6ee]">
-                درباره‌ی ایده و نیاز کسب‌وکارتان با ما صحبت کنید. برای تماس، روی شماره بزنید.
-              </p>
+              <h2 className="font-display text-[clamp(1.7rem,3.4vw,2.5rem)] font-extrabold leading-[1.5]">{t('cta.title')}</h2>
+              <p className="mt-4 max-w-lg text-lg leading-9 text-[#b9c6ee]">{t('cta.text')}</p>
             </div>
             <div className="flex flex-col items-start gap-5 md:items-end">
-              <a href={telHref(labels.phone)} className="cta-phone" dir="ltr">
-                {labels.phone}
+              <a href={telHref(phone)} className="cta-phone" dir="ltr">
+                {phone}
               </a>
               {telegram ? (
                 <Button
@@ -36,7 +35,7 @@ export default function CtaBand() {
                   variant="light"
                   icon={<FaTelegramPlane aria-hidden="true" />}
                 >
-                  پیام در تلگرام
+                  {t('cta.telegram')}
                 </Button>
               ) : null}
             </div>

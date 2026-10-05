@@ -1,6 +1,6 @@
 import { useEffect, useRef } from 'react';
 
-// نوار نازک بالای صفحه که میزان پیمایش رو نشون می‌ده
+// نوار نازک بالای صفحه که میزان پیمایش رو نشون می‌ده (از سمت شروع خط، در هر دو جهت)
 export default function ScrollProgress() {
   const barRef = useRef(null);
 
@@ -29,7 +29,7 @@ export default function ScrollProgress() {
     <div aria-hidden="true" className="pointer-events-none fixed inset-x-0 top-0 z-[70] h-[3px]">
       <div
         ref={barRef}
-        className="h-full origin-right bg-gradient-to-l from-saffron via-turq to-lapis"
+        className="h-full origin-left bg-gradient-to-r from-saffron via-turq to-lapis rtl:origin-right rtl:bg-gradient-to-l"
         style={{ transform: 'scaleX(0)' }}
       />
     </div>

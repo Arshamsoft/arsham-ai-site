@@ -1,9 +1,8 @@
-import { useContext } from 'react';
 import aboutImage from '../assets/8.png';
-import { LanguageContext } from '../context/LanguageContext';
 import { useContent } from '../context/ContentContext';
-import useTranslated from '../lib/useTranslated';
-import { DEFAULT_SKILLS, HEADER_DEFAULTS, asList, textOf } from '../lib/helpers';
+import { useI18n } from '../context/LanguageContext';
+import useSiteLabels from '../i18n/useSiteLabels';
+import { DEFAULT_SKILLS, asList, textOf } from '../lib/helpers';
 import PageHead from '../components/PageHead';
 import Tile from '../components/Tile';
 import Reveal from '../components/Reveal';
@@ -21,11 +20,11 @@ const DEFAULT_ABOUT = `من ارشام هستم، توسعه‌دهنده‌ی �
 
 export default function About() {
   const { content } = useContent();
-  const { lang } = useContext(LanguageContext);
+  const { t, tr } = useI18n();
+  const { nav } = useSiteLabels();
   const about = content.about || {};
-  const labels = { ...HEADER_DEFAULTS, ...(content.header || {}) };
 
-  const text = useTranslated(textOf(about.content) || DEFAULT_ABOUT, lang);
+  const text = tr(textOf(about.content) || DEFAULT_ABOUT);
   const skills = asList(about.skills, DEFAULT_SKILLS).map(textOf).filter(Boolean);
   const image = textOf(about.image) || aboutImage;
 
@@ -35,13 +34,13 @@ export default function About() {
 
   return (
     <>
-      <PageHead title={labels.about} />
+      <PageHead title={nav('about')} />
 
       <section className="container-x grid items-center gap-16 pb-24 lg:grid-cols-[0.85fr_1.15fr] lg:gap-14">
         <Reveal className="relative mx-auto w-full max-w-md py-10">
           <StarHalo className="absolute left-1/2 top-1/2 aspect-square w-[128%] -translate-x-1/2 -translate-y-1/2" />
           <Tile cut={34} className="relative" faceClassName="p-2.5">
-            <img src={image} alt="درباره‌ی آرشام" className="h-auto w-full" />
+            <img src={image} alt={t('about.alt')} className="h-auto w-full" />
           </Tile>
         </Reveal>
 

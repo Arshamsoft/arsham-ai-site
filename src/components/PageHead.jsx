@@ -1,15 +1,17 @@
 import { Link } from 'react-router-dom';
+import { useI18n } from '../context/LanguageContext';
 import { StarMark } from './Star';
 
 // سرصفحه‌ی صفحه‌های داخلی: مسیر، تیتر، توضیح کوتاه
 export default function PageHead({ title, subtitle, trail = [] }) {
+  const { t } = useI18n();
   return (
     <header className="container-x pb-10 pt-12 md:pb-14 md:pt-16">
-      <nav aria-label="مسیر صفحه" className="hero-in text-sm text-muted">
+      <nav aria-label={t('ui.breadcrumb')} className="hero-in text-sm text-muted">
         <ol className="flex flex-wrap items-center gap-2">
           <li>
             <Link to="/" className="transition hover:text-fg">
-              خانه
+              {t('nav.home')}
             </Link>
           </li>
           {trail.map((item) => (
