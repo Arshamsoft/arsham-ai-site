@@ -81,7 +81,9 @@ export default function Home() {
                     <span className="icon-cell">
                       <Icon aria-hidden="true" />
                     </span>
-                    <p className="font-display text-lg font-bold leading-8 md:text-xl">{tr(text)}</p>
+                    <p className="font-display text-lg font-bold leading-8 md:text-xl">
+                      {customPillars.length ? pick({ translations: hero.translations, [`pillar${index}`]: text }, `pillar${index}`) : tr(text)}
+                    </p>
                   </div>
                 );
               })}

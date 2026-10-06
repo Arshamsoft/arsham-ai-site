@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from 'react';
 import { useI18n } from '../context/LanguageContext';
 import { LogoMark, Wordmark } from './Logo';
 import { starPoints } from './Star';
+import { isPreview } from '../lib/preview';
 
 const SEEN_KEY = 'arshamai_intro_seen';
 const SHOW_MS = 1500;
@@ -10,7 +11,7 @@ const STAR = starPoints(100, 100, 96);
 
 // فقط اولین بازدید در هر نشست، و نه برای کسانی که «کاهش حرکت» رو روشن کردن
 export function shouldShowSplash() {
-  if (typeof window === 'undefined') return false;
+  if (typeof window === 'undefined' || isPreview()) return false;
   try {
     if (window.sessionStorage.getItem(SEEN_KEY)) return false;
   } catch (e) {

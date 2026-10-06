@@ -1,4 +1,4 @@
-import { FaClock, FaMapMarkerAlt } from 'react-icons/fa';
+import { FaClock, FaEnvelope, FaMapMarkerAlt } from 'react-icons/fa';
 import { useContent } from '../context/ContentContext';
 import { useI18n } from '../context/LanguageContext';
 import useSiteLabels from '../i18n/useSiteLabels';
@@ -11,7 +11,7 @@ import TicketForm from '../components/TicketForm';
 export default function Contact() {
   const { content } = useContent();
   const { t, lang } = useI18n();
-  const { phone, hours, location } = useSiteLabels();
+  const { phone, email, hours, location } = useSiteLabels();
   const info = content.contactInfo || {};
   const socials = socialLinks(content.socialLinks);
 
@@ -31,6 +31,14 @@ export default function Contact() {
                 {phone}
               </a>
               <ul className="mt-8 grid gap-4 text-muted">
+                {email ? (
+                  <li className="flex items-center gap-3">
+                    <FaEnvelope aria-hidden="true" className="flex-none text-turq" />
+                    <a href={`mailto:${email}`} dir="ltr" className="transition hover:text-turq">
+                      {email}
+                    </a>
+                  </li>
+                ) : null}
                 <li className="flex items-center gap-3">
                   <FaMapMarkerAlt aria-hidden="true" className="flex-none text-turq" />
                   <span>{location}</span>

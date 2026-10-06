@@ -3,10 +3,13 @@ import { LANGUAGES, LANGUAGE_BY_CODE } from '../i18n/languages';
 import { MESSAGES } from '../i18n/messages';
 import { EXTRA_MESSAGES } from '../i18n/messagesExtra';
 import { translateContent, translateContentHtml } from '../i18n/localTranslate';
+import { previewLang } from '../lib/preview';
 
 const STORAGE_KEY = 'arshamai_lang';
 
 function savedLanguage() {
+  const forced = previewLang();
+  if (forced && LANGUAGE_BY_CODE[forced]) return forced;
   try {
     const stored = window.localStorage.getItem(STORAGE_KEY);
     if (stored && LANGUAGE_BY_CODE[stored]) return stored;
@@ -36,6 +39,9 @@ export const LanguageContext = createContext(null);
 
 export function LanguageProvider({ children }) {
   const [lang, setLangState] = useState(START);
+  // متن‌هایی که ادمین از پنل عوض کرده: [{ key, value, translations: { en: { value } } }]
+  const [overrides, setOverrides] = useState([]);
+  const setTextOverrides = useCallback((list) => setOverrides(Array.isArray(list) ? list : []), []);
 
   const setLang = useCallback((code) => {
     if (!LANGUAGE_BY_CODE[code]) return;
@@ -52,7 +58,13 @@ export function LanguageProvider({ children }) {
     const meta = LANGUAGE_BY_CODE[lang];
     const dictionary = { ...(MESSAGES[lang] || MESSAGES.fa), ...(EXTRA_MESSAGES[lang] || EXTRA_MESSAGES.fa) };
     const fallback = { ...MESSAGES.fa, ...EXTRA_MESSAGES.fa };
-    const t = (key, vars) => fill(dictionary[key] ?? fallback[key] ?? key, vars);
+    const custom = new Map(overrides.filter((o) => o && o.key).map((o) => [o.key, o]));
+    const t = (key, vars) => {
+      const o = custom.get(key);
+      const edited = o ? (lang === 'fa' ? o.value : o.translations && o.translations[lang] && o.translations[lang].value) : '';
+      const text = typeof edited === 'string' && edited.trim() ? edited : dictionary[key] ?? fallback[key] ?? key;
+      return fill(text, vars);
+    };
 
     // ترجمه‌ای که در پنل ادمین برای همین مورد ذخیره شده (اولویت اول)
     const stored = (entity, field) => {
@@ -99,8 +111,9 @@ export function LanguageProvider({ children }) {
       pickHtml,
       number,
       date,
+      setTextOverrides,
     };
-  }, [lang, setLang]);
+  }, [lang, setLang, overrides, setTextOverrides]);
 
   return <LanguageContext.Provider value={value}>{children}</LanguageContext.Provider>;
 }

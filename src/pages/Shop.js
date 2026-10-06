@@ -8,6 +8,7 @@ import { listFrom } from '../lib/helpers';
 import PageHead from '../components/PageHead';
 import Tile from '../components/Tile';
 import Button from '../components/Button';
+import ProductActions, { trackProductView } from '../components/ProductActions';
 import Reveal from '../components/Reveal';
 import SkeletonGrid from '../components/SkeletonGrid';
 import StateMessage from '../components/StateMessage';
@@ -188,6 +189,7 @@ function ProductCard({ product, onOpen }) {
         {product.description ? <p className="mt-2 line-clamp-2 text-sm leading-7 text-muted">{pick(product, 'description')}</p> : null}
         <div className="mt-auto pt-6">
           <Price product={product} />
+          {product.hasFile ? <ProductActions product={product} /> : null}
         </div>
       </div>
     </Tile>
@@ -198,6 +200,10 @@ function ProductModal({ product, onClose }) {
   const { t, tr, pick } = useI18n();
   const images = [product.image, ...(Array.isArray(product.gallery) ? product.gallery : [])].filter(Boolean);
   const [current, setCurrent] = useState(images[0] || '');
+
+  useEffect(() => {
+    trackProductView(product);
+  }, [product]);
   const closeRef = useRef(null);
   const specs =
     product.specifications && typeof product.specifications === 'object' && !Array.isArray(product.specifications)
@@ -294,8 +300,15 @@ function ProductModal({ product, onClose }) {
                 </video>
               ) : null}
 
+              {product.hasFile && (product.platform || product.version) ? (
+                <p className="mt-6 flex flex-wrap gap-2">
+                  {product.platform ? <span className="chip">{t('shop.platform')}: {product.platform}</span> : null}
+                  {product.version ? <span className="chip" dir="ltr">v{product.version}</span> : null}
+                </p>
+              ) : null}
+
               <div className="mt-auto pt-8">
-                <Button to="/contact">{t('shop.order')}</Button>
+                {product.hasFile ? <ProductActions product={product} size="full" /> : <Button to="/contact">{t('shop.order')}</Button>}
               </div>
             </div>
           </div>

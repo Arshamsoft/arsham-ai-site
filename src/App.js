@@ -16,6 +16,7 @@ import Register from './pages/Register';
 import Account from './pages/Account';
 import Support from './pages/Support';
 import TicketView from './pages/TicketView';
+import PaymentResult from './pages/PaymentResult';
 import { LanguageProvider } from './context/LanguageContext';
 import { ContentProvider } from './context/ContentContext';
 import { CustomerProvider } from './context/CustomerContext';
@@ -99,6 +100,7 @@ function App() {
             <Route path="/account" element={<Account />} />
             <Route path="/support" element={<Support />} />
             <Route path="/support/:id" element={<TicketView />} />
+            <Route path="/payment/result" element={<PaymentResult />} />
             <Route path="*" element={<NotFound />} />
           </Route>
         </Routes>

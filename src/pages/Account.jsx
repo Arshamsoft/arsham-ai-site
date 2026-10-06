@@ -10,9 +10,10 @@ import Button from '../components/Button';
 import StatusBadge from '../components/StatusBadge';
 import FormField, { FormMessage } from '../components/FormField';
 import { authErrorText } from './Login';
+import ProductActions from '../components/ProductActions';
 
 export default function Account() {
-  const { t, date } = useI18n();
+  const { t, date, pick, number } = useI18n();
   const { customer, ready, headers, updateProfile, changePassword, logout } = useCustomer();
   const location = useLocation();
   const [profile, setProfile] = useState({ name: '', phone: '' });
@@ -20,6 +21,7 @@ export default function Account() {
   const [passwords, setPasswords] = useState({ current: '', next: '' });
   const [passwordMsg, setPasswordMsg] = useState({ tone: 'success', text: '' });
   const [tickets, setTickets] = useState(null);
+  const [orders, setOrders] = useState(null);
 
   useEffect(() => {
     if (customer) setProfile({ name: customer.name || '', phone: customer.phone || '' });
@@ -33,6 +35,10 @@ export default function Account() {
       .get('/tickets/mine', { headers: { Authorization: authHeader } })
       .then((res) => alive && setTickets(res.data.data || []))
       .catch(() => alive && setTickets([]));
+    api
+      .get('/store/orders/mine', { headers: { Authorization: authHeader } })
+      .then((res) => alive && setOrders((res.data.data || []).filter((o) => o.status === 'paid')))
+      .catch(() => alive && setOrders([]));
     return () => {
       alive = false;
     };
@@ -131,6 +137,26 @@ export default function Account() {
                   </Link>
                 </li>
               ))}
+            </ul>
+          ) : null}
+
+          <h2 className="mt-12 font-display text-xl font-bold">{t('account.purchases')}</h2>
+          {orders && !orders.length ? <p className="mt-6 text-muted">{t('account.noPurchases')}</p> : null}
+          {orders && orders.length ? (
+            <ul className="mt-6 grid gap-5">
+              {orders.flatMap((order) =>
+                (order.items || [])
+                  .filter((item) => item.product)
+                  .map((item) => (
+                    <li key={`${order._id}-${item.product._id}`} className="border-t border-line/60 pt-5">
+                      <p className="font-semibold">{pick(item.product, 'title')}</p>
+                      <p className="mt-1 text-sm text-muted">
+                        #{order.number} · {date(order.paidAt)} · {number(item.price)} {t('shop.currency')}
+                      </p>
+                      {item.product.hasFile ? <ProductActions product={{ ...item.product, price: item.price, hasFile: true }} size="full" /> : null}
+                    </li>
+                  )),
+              )}
             </ul>
           ) : null}
         </Tile>

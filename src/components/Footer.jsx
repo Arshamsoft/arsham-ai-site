@@ -19,7 +19,7 @@ export default function Footer() {
   const year = new Date().getFullYear();
   const savedCopyright = textOf(footer.copyright);
   const copyright =
-    !savedCopyright || DEFAULT_COPYRIGHT.test(savedCopyright) ? t('footer.copyright', { year }) : tr(savedCopyright);
+    !savedCopyright || DEFAULT_COPYRIGHT.test(savedCopyright) ? t('footer.copyright', { year }) : pick({ ...footer, copyright: savedCopyright }, 'copyright');
 
   const pages = [
     { to: '/', label: nav('home') },
