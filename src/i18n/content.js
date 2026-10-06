@@ -326,4 +326,9 @@ export const CONTENT_TRANSLATIONS = [
     ru: 'Член Союза интернет-бизнеса',
     zh: '互联网企业协会会员',
   },
+  // دسته‌بندی‌های مقاله (فهرست ثابت پنل ادمین)
+  { fa: 'عمومی', en: 'General', de: 'Allgemein', ko: '일반', ja: '一般', ru: 'Общее', zh: '综合' },
+  { fa: 'آموزشی', en: 'Tutorials', de: 'Tutorials', ko: '튜토리얼', ja: 'チュートリアル', ru: 'Обучение', zh: '教程' },
+  { fa: 'خبری', en: 'News', de: 'Neuigkeiten', ko: '뉴스', ja: 'ニュース', ru: 'Новости', zh: '新闻' },
+  { fa: 'معرفی محصول', en: 'Product spotlight', de: 'Produktvorstellung', ko: '제품 소개', ja: '製品紹介', ru: 'Обзор продукта', zh: '产品介绍' },
 ];
