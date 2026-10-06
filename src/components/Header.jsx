@@ -1,8 +1,9 @@
 import { useEffect, useState } from 'react';
 import { Link, NavLink, useLocation } from 'react-router-dom';
-import { FaBars, FaClock, FaMapMarkerAlt, FaPhoneAlt, FaTimes } from 'react-icons/fa';
+import { FaBars, FaClock, FaMapMarkerAlt, FaPhoneAlt, FaTimes, FaUserCircle } from 'react-icons/fa';
 import { useContent } from '../context/ContentContext';
 import { useI18n } from '../context/LanguageContext';
+import { useCustomer } from '../context/CustomerContext';
 import useSiteLabels from '../i18n/useSiteLabels';
 import { socialIcon, socialLinks, telHref } from '../lib/helpers';
 import Logo from './Logo';
@@ -15,6 +16,9 @@ export default function Header() {
   const { content } = useContent();
   const { t, lang, setLang, languages } = useI18n();
   const { nav, phone, hours, location } = useSiteLabels();
+  const { customer } = useCustomer();
+  const accountLink = customer ? '/account' : '/login';
+  const accountLabel = customer ? t('auth.account') : t('auth.login');
   const socials = socialLinks(content.socialLinks);
   const { pathname } = useLocation();
   const [scrolled, setScrolled] = useState(false);
@@ -109,6 +113,7 @@ export default function Header() {
         </nav>
 
         <div className="flex items-center gap-2">
+          <Button to={accountLink} variant="icon" aria-label={accountLabel} title={accountLabel} icon={<FaUserCircle aria-hidden="true" />} />
           <LanguageSwitcher />
           <ThemeToggle />
           <Button
@@ -148,6 +153,12 @@ export default function Header() {
                   </li>
                 ))}
               </ul>
+              <NavLink to={accountLink} className={({ isActive }) => `mobile-link${isActive ? ' is-active' : ''}`}>
+                {accountLabel}
+              </NavLink>
+              <NavLink to="/support" className={({ isActive }) => `mobile-link${isActive ? ' is-active' : ''}`}>
+                {t('nav.support')}
+              </NavLink>
               <a href={telHref(phone)} className="mobile-link">
                 <span>{t('ui.call')}</span>
                 <span dir="ltr" className="text-saffron">

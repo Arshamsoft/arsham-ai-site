@@ -3,18 +3,18 @@ import { FaClock, FaMapMarkerAlt, FaPhoneAlt } from 'react-icons/fa';
 import { useContent } from '../context/ContentContext';
 import { useI18n } from '../context/LanguageContext';
 import useSiteLabels from '../i18n/useSiteLabels';
-import { DEFAULT_LICENSES, DEFAULT_SERVICES, asList, socialIcon, socialLinks, telHref, textOf } from '../lib/helpers';
+import { DEFAULT_LICENSES, asList, serviceItems, socialIcon, socialLinks, telHref, textOf } from '../lib/helpers';
 import Logo from './Logo';
 
 const DEFAULT_COPYRIGHT = /^©\s*\d{4}\s*Arshamai\.com\s*\|\s*طراحی و توسعه توسط ارشام\s*$/;
 
 export default function Footer() {
   const { content } = useContent();
-  const { t, tr } = useI18n();
+  const { t, tr, pick } = useI18n();
   const { nav, phone, hours, location } = useSiteLabels();
   const footer = content.footer || {};
   const socials = socialLinks(content.socialLinks);
-  const services = asList(content.services, DEFAULT_SERVICES).map(textOf).filter(Boolean).slice(0, 8);
+  const services = serviceItems(content.services).slice(0, 8);
   const licenses = asList(footer.licenses, DEFAULT_LICENSES).map(textOf).filter(Boolean);
   const year = new Date().getFullYear();
   const savedCopyright = textOf(footer.copyright);
@@ -30,6 +30,7 @@ export default function Footer() {
     { to: '/blog', label: nav('blog') },
     { to: '/about', label: nav('about') },
     { to: '/contact', label: nav('contact') },
+    { to: '/support', label: t('nav.support') },
   ];
 
   return (
@@ -82,10 +83,10 @@ export default function Footer() {
         <div>
           <h2 className="font-display text-base font-bold">{t('footer.services')}</h2>
           <ul className="mt-5 grid gap-2.5">
-            {services.map((name) => (
-              <li key={name}>
+            {services.map((item) => (
+              <li key={item.value}>
                 <Link to="/services" className="text-muted transition hover:text-fg">
-                  {tr(name)}
+                  {pick(item, 'value')}
                 </Link>
               </li>
             ))}

@@ -5,8 +5,8 @@ module.exports = {
   theme: {
     extend: {
       fontFamily: {
-        sans: ['"Vazirmatn Variable"', 'Vazirmatn', 'Tahoma', 'system-ui', 'sans-serif'],
-        display: ['"Kufi Display"', '"Vazirmatn Variable"', 'Vazirmatn', 'Tahoma', 'sans-serif'],
+        sans: ['"Vazirmatn Variable"', 'Vazirmatn', 'system-ui', '-apple-system', '"Segoe UI"', 'Roboto', '"Noto Sans"', 'Tahoma', 'sans-serif'],
+        display: ['"Kufi Display"', '"Vazirmatn Variable"', 'Vazirmatn', 'system-ui', '-apple-system', '"Segoe UI"', 'Roboto', '"Noto Sans"', 'Tahoma', 'sans-serif'],
       },
       // رنگ‌ها از متغیرهای CSS در src/index.css میان تا تم روشن/تیره با یک کلاس عوض بشه
       colors: {

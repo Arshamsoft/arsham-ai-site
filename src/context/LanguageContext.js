@@ -1,14 +1,15 @@
 import { createContext, useCallback, useContext, useMemo, useState } from 'react';
 import { LANGUAGES, LANGUAGE_BY_CODE } from '../i18n/languages';
 import { MESSAGES } from '../i18n/messages';
+import { EXTRA_MESSAGES } from '../i18n/messagesExtra';
 import { translateContent, translateContentHtml } from '../i18n/localTranslate';
 
 const STORAGE_KEY = 'arshamai_lang';
 
 function savedLanguage() {
   try {
-    const saved = window.localStorage.getItem(STORAGE_KEY);
-    if (saved && LANGUAGE_BY_CODE[saved]) return saved;
+    const stored = window.localStorage.getItem(STORAGE_KEY);
+    if (stored && LANGUAGE_BY_CODE[stored]) return stored;
   } catch (e) {
     // پیش‌فرض: فارسی
   }
@@ -49,8 +50,27 @@ export function LanguageProvider({ children }) {
 
   const value = useMemo(() => {
     const meta = LANGUAGE_BY_CODE[lang];
-    const dictionary = MESSAGES[lang] || MESSAGES.fa;
-    const t = (key, vars) => fill(dictionary[key] ?? MESSAGES.fa[key] ?? key, vars);
+    const dictionary = { ...(MESSAGES[lang] || MESSAGES.fa), ...(EXTRA_MESSAGES[lang] || EXTRA_MESSAGES.fa) };
+    const fallback = { ...MESSAGES.fa, ...EXTRA_MESSAGES.fa };
+    const t = (key, vars) => fill(dictionary[key] ?? fallback[key] ?? key, vars);
+
+    // ترجمه‌ای که در پنل ادمین برای همین مورد ذخیره شده (اولویت اول)
+    const stored = (entity, field) => {
+      const v = entity && entity.translations && entity.translations[lang] && entity.translations[lang][field];
+      return typeof v === 'string' && v.trim() ? v : '';
+    };
+    // فارسی → خود متن؛ زبان‌های دیگه → ترجمه‌ی ذخیره‌شده، وگرنه ترجمه‌ی محلی سایت
+    const pick = (entity, field) => {
+      if (!entity) return '';
+      if (lang === 'fa') return entity[field];
+      return stored(entity, field) || translateContent(lang, entity[field]);
+    };
+    const pickHtml = (entity, field) => {
+      if (!entity) return '';
+      if (lang === 'fa') return entity[field];
+      return stored(entity, field) || translateContentHtml(lang, entity[field]);
+    };
+
     const number = (input) => {
       const n = Number(input || 0);
       return Number.isFinite(n) ? n.toLocaleString(meta.locale) : '';
@@ -65,6 +85,7 @@ export function LanguageProvider({ children }) {
         return d.toLocaleDateString();
       }
     };
+
     return {
       lang,
       setLang,
@@ -74,6 +95,8 @@ export function LanguageProvider({ children }) {
       t,
       tr: (text) => translateContent(lang, text),
       trHtml: (html) => translateContentHtml(lang, html),
+      pick,
+      pickHtml,
       number,
       date,
     };

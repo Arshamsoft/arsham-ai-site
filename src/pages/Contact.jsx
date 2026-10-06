@@ -1,13 +1,12 @@
-import { useState } from 'react';
-import { FaClock, FaInfoCircle, FaMapMarkerAlt, FaPaperPlane } from 'react-icons/fa';
+import { FaClock, FaMapMarkerAlt } from 'react-icons/fa';
 import { useContent } from '../context/ContentContext';
 import { useI18n } from '../context/LanguageContext';
 import useSiteLabels from '../i18n/useSiteLabels';
 import { socialIcon, socialLinks, telHref, textOf } from '../lib/helpers';
 import PageHead from '../components/PageHead';
 import Tile from '../components/Tile';
-import Button from '../components/Button';
 import Reveal from '../components/Reveal';
+import TicketForm from '../components/TicketForm';
 
 export default function Contact() {
   const { content } = useContent();
@@ -18,14 +17,6 @@ export default function Contact() {
 
   // متن‌های فرم: فارسی از پنل ادمین، بقیه‌ی زبان‌ها از ترجمه‌ها
   const pick = (cmsKey, key) => (lang === 'fa' && textOf(info[cmsKey]) ? textOf(info[cmsKey]) : t(key));
-
-  // فرم هنوز به سامانه‌ی دریافت پیام وصل نیست؛ به‌جای وانمود به ارسال، راه تماس مستقیم رو نشون می‌دیم
-  const [notice, setNotice] = useState(false);
-  const onSubmit = (event) => {
-    event.preventDefault();
-    setNotice(true);
-  };
-  const [noticeBefore, noticeAfter = ''] = t('contact.notice').split('{phone}');
 
   return (
     <>
@@ -83,41 +74,7 @@ export default function Contact() {
 
         <Reveal delay={160}>
           <Tile cut={28} faceClassName="p-8 md:p-10">
-            <form onSubmit={onSubmit} className="grid gap-6">
-              <div className="grid gap-6 sm:grid-cols-2">
-                <label className="grid gap-2">
-                  <span className="text-sm font-semibold">{pick('namePlaceholder', 'contact.name')}</span>
-                  <input name="name" type="text" required autoComplete="name" className="field" />
-                </label>
-                <label className="grid gap-2">
-                  <span className="text-sm font-semibold">{pick('emailPlaceholder', 'contact.email')}</span>
-                  <input name="email" type="email" required autoComplete="email" dir="ltr" className="field text-left" />
-                </label>
-              </div>
-              <label className="grid gap-2">
-                <span className="text-sm font-semibold">{pick('messagePlaceholder', 'contact.message')}</span>
-                <textarea name="message" rows={6} required className="field resize-y" />
-              </label>
-
-              {notice ? (
-                <div role="status" className="flex items-start gap-3 border-s-4 border-saffron bg-saffron/10 p-4 leading-8">
-                  <FaInfoCircle aria-hidden="true" className="mt-2 flex-none text-saffron" />
-                  <p>
-                    {noticeBefore}
-                    <a href={telHref(phone)} dir="ltr" className="font-bold underline underline-offset-4">
-                      {phone}
-                    </a>
-                    {noticeAfter}
-                  </p>
-                </div>
-              ) : null}
-
-              <div>
-                <Button type="submit" icon={<FaPaperPlane aria-hidden="true" />}>
-                  {pick('buttonText', 'contact.send')}
-                </Button>
-              </div>
-            </form>
+            <TicketForm source="contact" withSubject={false} sendLabel={pick('buttonText', 'contact.send')} />
           </Tile>
         </Reveal>
       </section>

@@ -13,7 +13,7 @@ import StateMessage from '../components/StateMessage';
 
 export default function BlogPost() {
   const { id } = useParams();
-  const { t, tr, trHtml, date, number, lang } = useI18n();
+  const { t, tr, pick, pickHtml, date, number, lang } = useI18n();
   const { nav } = useSiteLabels();
   const [article, setArticle] = useState(null);
   const [status, setStatus] = useState('loading');
@@ -63,17 +63,17 @@ export default function BlogPost() {
 
   const published = date(article.createdAt);
   const tags = Array.isArray(article.tags) ? article.tags.filter(Boolean) : [];
-  const body = trHtml(article.content || '');
+  const body = pickHtml(article, 'content') || '';
   const persianOnly = lang !== 'fa' && hasPersian(stripHtml(body));
 
   return (
     <article>
-      <PageHead title={tr(article.title)} trail={[{ to: '/blog', label: nav('blog') }]} />
+      <PageHead title={pick(article, 'title')} trail={[{ to: '/blog', label: nav('blog') }]} />
 
       <div className="container-x pb-24">
         <div className="max-w-3xl">
           <div className="flex flex-wrap items-center gap-5 text-sm text-muted">
-            {article.category ? <span className="chip">{tr(article.category)}</span> : null}
+            {article.category ? <span className="chip">{pick(article, 'category')}</span> : null}
             {published ? (
               <span className="inline-flex items-center gap-2">
                 <FaRegCalendar aria-hidden="true" />

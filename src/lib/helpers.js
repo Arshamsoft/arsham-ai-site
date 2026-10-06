@@ -83,6 +83,12 @@ export function asList(value, fallback = []) {
   return fallback;
 }
 
+export function serviceItems(value) {
+  return asList(value, DEFAULT_SERVICES)
+    .map((item) => (typeof item === 'string' ? { value: item } : item))
+    .filter((item) => item && textOf(item));
+}
+
 export function textOf(item) {
   if (item == null) return '';
   if (typeof item === 'string' || typeof item === 'number') return String(item).trim();

@@ -11,14 +11,21 @@ import Blog from './pages/Blog';
 import BlogPost from './pages/BlogPost';
 import AndroidApp from './pages/AndroidApp';
 import NotFound from './pages/NotFound';
+import Login from './pages/Login';
+import Register from './pages/Register';
+import Account from './pages/Account';
+import Support from './pages/Support';
+import TicketView from './pages/TicketView';
 import { LanguageProvider } from './context/LanguageContext';
 import { ContentProvider } from './context/ContentContext';
+import { CustomerProvider } from './context/CustomerContext';
 import Header from './components/Header';
 import Footer from './components/Footer';
 import Background from './components/Background';
 import ScrollProgress from './components/ScrollProgress';
 import Splash, { shouldShowSplash } from './components/Splash';
 import VisitTracker from './components/VisitTracker';
+import ChatWidget from './components/ChatWidget';
 import { logoMarkSvgString } from './components/Logo';
 
 // تم ذخیره‌شده و آیکون تب مرورگر، قبل از اولین رندر (جهت و زبان صفحه در LanguageContext تنظیم می‌شه)
@@ -64,6 +71,7 @@ function Layout() {
         </main>
         <Footer />
       </div>
+      <ChatWidget />
     </div>
   );
 }
@@ -72,6 +80,7 @@ function App() {
   return (
     <LanguageProvider>
       <ContentProvider>
+        <CustomerProvider>
         <VisitTracker />
         <Splash />
         <Routes>
@@ -85,9 +94,15 @@ function App() {
             <Route path="/blog/:id" element={<BlogPost />} />
             <Route path="/about" element={<About />} />
             <Route path="/contact" element={<Contact />} />
+            <Route path="/login" element={<Login />} />
+            <Route path="/register" element={<Register />} />
+            <Route path="/account" element={<Account />} />
+            <Route path="/support" element={<Support />} />
+            <Route path="/support/:id" element={<TicketView />} />
             <Route path="*" element={<NotFound />} />
           </Route>
         </Routes>
+        </CustomerProvider>
       </ContentProvider>
     </LanguageProvider>
   );

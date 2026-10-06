@@ -19,7 +19,7 @@ function discountOf(product) {
 }
 
 export default function Shop() {
-  const { t, tr } = useI18n();
+  const { t, pick } = useI18n();
   const { nav } = useSiteLabels();
   const [products, setProducts] = useState([]);
   const [status, setStatus] = useState('loading');
@@ -53,7 +53,7 @@ export default function Shop() {
     if (category && p.category !== category) return false;
     const needle = query.trim().toLowerCase();
     if (!needle) return true;
-    const haystack = `${p.title || ''} ${p.description || ''} ${tr(p.title) || ''} ${tr(p.description) || ''}`.toLowerCase();
+    const haystack = `${p.title || ''} ${p.description || ''} ${pick(p, 'title') || ''} ${pick(p, 'description') || ''}`.toLowerCase();
     return haystack.includes(needle);
   });
 
@@ -90,7 +90,7 @@ export default function Shop() {
                     onClick={() => setCategory(name)}
                     aria-pressed={category === name}
                   >
-                    {tr(name)}
+                    {pick(products.find((p) => p.category === name) || { category: name }, 'category')}
                   </button>
                 ))}
               </div>
@@ -163,7 +163,7 @@ function Price({ product, large = false }) {
 }
 
 function ProductCard({ product, onOpen }) {
-  const { t, tr, number } = useI18n();
+  const { t, pick, number } = useI18n();
   const off = discountOf(product);
   return (
     <Tile as="article" hover cut={22} className="group h-full" faceClassName="flex h-full flex-col">
@@ -179,13 +179,13 @@ function ProductCard({ product, onOpen }) {
         {product.inStock === false ? <span className="badge badge-out">{t('shop.outOfStock')}</span> : null}
       </div>
       <div className="flex flex-1 flex-col p-6">
-        {product.category ? <span className="text-sm text-muted">{tr(product.category)}</span> : null}
+        {product.category ? <span className="text-sm text-muted">{pick(product, 'category')}</span> : null}
         <h3 className="mt-1 text-lg font-bold leading-8">
           <button type="button" onClick={() => onOpen(product)} className="text-start after:absolute after:inset-0 after:content-['']">
-            {tr(product.title)}
+            {pick(product, 'title')}
           </button>
         </h3>
-        {product.description ? <p className="mt-2 line-clamp-2 text-sm leading-7 text-muted">{tr(product.description)}</p> : null}
+        {product.description ? <p className="mt-2 line-clamp-2 text-sm leading-7 text-muted">{pick(product, 'description')}</p> : null}
         <div className="mt-auto pt-6">
           <Price product={product} />
         </div>
@@ -195,7 +195,7 @@ function ProductCard({ product, onOpen }) {
 }
 
 function ProductModal({ product, onClose }) {
-  const { t, tr } = useI18n();
+  const { t, tr, pick } = useI18n();
   const images = [product.image, ...(Array.isArray(product.gallery) ? product.gallery : [])].filter(Boolean);
   const [current, setCurrent] = useState(images[0] || '');
   const closeRef = useRef(null);
@@ -233,7 +233,7 @@ function ProductModal({ product, onClose }) {
           <div className="grid md:grid-cols-[1.1fr_1fr]">
             <div className="bg-raised/60 p-4">
               {current ? (
-                <img src={current} alt={tr(product.title)} className="aspect-square w-full object-contain" />
+                <img src={current} alt={pick(product, 'title')} className="aspect-square w-full object-contain" />
               ) : (
                 <div className="grid aspect-square place-items-center text-muted">
                   <FaBoxOpen size={56} aria-hidden="true" />
@@ -266,15 +266,15 @@ function ProductModal({ product, onClose }) {
               >
                 <FaTimes aria-hidden="true" />
               </button>
-              {product.category ? <span className="text-sm text-muted">{tr(product.category)}</span> : null}
+              {product.category ? <span className="text-sm text-muted">{pick(product, 'category')}</span> : null}
               <h2 id="product-title" className="mt-1 pe-10 font-display text-2xl font-extrabold leading-10">
-                {tr(product.title)}
+                {pick(product, 'title')}
               </h2>
               <div className="mt-5">
                 <Price product={product} large />
               </div>
               {product.inStock === false ? <p className="mt-2 font-semibold text-saffron">{t('shop.outOfStockLong')}</p> : null}
-              {product.description ? <p className="mt-6 whitespace-pre-line leading-8 text-fg/85">{tr(product.description)}</p> : null}
+              {product.description ? <p className="mt-6 whitespace-pre-line leading-8 text-fg/85">{pick(product, 'description')}</p> : null}
 
               {specs.length ? (
                 <dl className="mt-7 grid gap-px overflow-hidden border border-line/60 bg-line/60">

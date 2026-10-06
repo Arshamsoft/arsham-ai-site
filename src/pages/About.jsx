@@ -20,11 +20,11 @@ const DEFAULT_ABOUT = `من ارشام هستم، توسعه‌دهنده‌ی �
 
 export default function About() {
   const { content } = useContent();
-  const { t, tr } = useI18n();
+  const { t, pick } = useI18n();
   const { nav } = useSiteLabels();
   const about = content.about || {};
 
-  const text = tr(textOf(about.content) || DEFAULT_ABOUT);
+  const text = pick({ ...about, content: textOf(about.content) || DEFAULT_ABOUT }, 'content');
   const skills = asList(about.skills, DEFAULT_SKILLS).map(textOf).filter(Boolean);
   const image = textOf(about.image) || aboutImage;
 

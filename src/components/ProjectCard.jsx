@@ -5,10 +5,10 @@ import Tile from './Tile';
 
 // کارت پروژه: تصویر کامل (بدون بریدگی) روی زمینه‌ی محو همان تصویر؛ اگه تصویر خراب بود، طرح جایگزین
 export default function ProjectCard({ item }) {
-  const { t, tr } = useI18n();
+  const { t, pick } = useI18n();
   const [broken, setBroken] = useState(false);
   const technologies = Array.isArray(item.technologies) ? item.technologies.filter(Boolean) : [];
-  const title = tr(item.title);
+  const title = pick(item, 'title');
   const showImage = item.image && !broken;
 
   return (
@@ -34,9 +34,9 @@ export default function ProjectCard({ item }) {
       </div>
 
       <div className="flex flex-1 flex-col p-6 md:p-7">
-        {item.category ? <span className="text-sm text-muted">{tr(item.category)}</span> : null}
+        {item.category ? <span className="text-sm text-muted">{pick(item, 'category')}</span> : null}
         <h3 className="mt-1 font-display text-xl font-bold leading-9">{title}</h3>
-        {item.description ? <p className="mt-3 leading-8 text-muted">{tr(item.description)}</p> : null}
+        {item.description ? <p className="mt-3 leading-8 text-muted">{pick(item, 'description')}</p> : null}
 
         {item.video ? (
           <video controls preload="none" poster={showImage ? item.image : undefined} className="mt-5 w-full bg-black/40">
@@ -57,7 +57,7 @@ export default function ProjectCard({ item }) {
 
         {item.client || item.link ? (
           <div className="mt-auto flex items-center justify-between gap-4 pt-6 text-sm">
-            <span className="text-muted">{item.client ? t('project.client', { name: tr(item.client) }) : ''}</span>
+            <span className="text-muted">{item.client ? t('project.client', { name: pick(item, 'client') }) : ''}</span>
             {item.link ? (
               <a
                 href={item.link}

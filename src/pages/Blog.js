@@ -75,7 +75,7 @@ export default function Blog() {
 }
 
 function ArticleCard({ article, featured }) {
-  const { t, tr, date, number } = useI18n();
+  const { t, pick, date, number } = useI18n();
   const published = date(article.createdAt);
   return (
     <Tile
@@ -94,9 +94,9 @@ function ArticleCard({ article, featured }) {
         )}
       </div>
       <div className="flex flex-col p-7 md:p-8">
-        {article.category ? <span className="chip self-start">{tr(article.category)}</span> : null}
-        <h2 className={`mt-4 font-display font-bold ${featured ? 'text-2xl leading-[1.8] md:text-3xl' : 'text-xl leading-9'}`}>{tr(article.title)}</h2>
-        <p className="mt-3 leading-8 text-muted">{tr(excerptOf(article, featured ? 260 : 150))}</p>
+        {article.category ? <span className="chip self-start">{pick(article, 'category')}</span> : null}
+        <h2 className={`mt-4 font-display font-bold ${featured ? 'text-2xl leading-[1.8] md:text-3xl' : 'text-xl leading-9'}`}>{pick(article, 'title')}</h2>
+        <p className="mt-3 leading-8 text-muted">{pick({ ...article, excerpt: excerptOf(article, featured ? 260 : 150) }, 'excerpt')}</p>
         <div className="mt-auto flex flex-wrap items-center gap-5 pt-6 text-sm text-muted">
           {published ? (
             <span className="inline-flex items-center gap-2">

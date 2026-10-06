@@ -5,7 +5,7 @@ import image7 from '../assets/YY2.png';
 import { useContent } from '../context/ContentContext';
 import { useI18n } from '../context/LanguageContext';
 import useSiteLabels from '../i18n/useSiteLabels';
-import { DEFAULT_SERVICES, DEFAULT_SKILLS, HERO_DEFAULTS, asList, phrases, sentences, serviceIcon, textOf } from '../lib/helpers';
+import { DEFAULT_SKILLS, HERO_DEFAULTS, asList, phrases, sentences, serviceIcon, serviceItems, textOf } from '../lib/helpers';
 import Tile from '../components/Tile';
 import Button from '../components/Button';
 import Reveal from '../components/Reveal';
@@ -20,7 +20,7 @@ const SECTION_TITLE = 'font-display text-[clamp(1.7rem,3vw,2.3rem)] font-extrabo
 
 export default function Home() {
   const { content } = useContent();
-  const { t, tr } = useI18n();
+  const { t, tr, pick } = useI18n();
   const { nav } = useSiteLabels();
 
   const hero = content.hero || {};
@@ -28,13 +28,13 @@ export default function Home() {
   const card2 = textOf(hero.card2) || HERO_DEFAULTS.card2;
   const lines = sentences(card2);
 
-  const headline = tr((textOf(hero.title) || lines[0] || card2).replace(/[.]+$/, ''));
-  const pitch = tr(card1);
+  const headline = pick({ translations: hero.translations, title: (textOf(hero.title) || lines[0] || card2).replace(/[.]+$/, '') }, 'title');
+  const pitch = pick({ translations: hero.translations, card1 }, 'card1');
   const customPillars = asList(hero.pillars).map(textOf).filter(Boolean);
   const pillars = customPillars.length ? customPillars : phrases(lines.slice(1).join(' '));
 
   const slides = asList(hero.sliderImages).map(textOf).filter(Boolean);
-  const services = asList(content.services, DEFAULT_SERVICES).map(textOf).filter(Boolean);
+  const services = serviceItems(content.services);
   const skills = asList((content.about || {}).skills, DEFAULT_SKILLS).map(textOf).filter(Boolean);
 
   return (
@@ -144,9 +144,9 @@ export default function Home() {
           </Link>
         </div>
         <div className="mt-10 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
-          {services.slice(0, 6).map((name, index) => (
-            <Reveal key={name} delay={index * 70} className="h-full">
-              <ServiceTile name={tr(name)} source={name} />
+          {services.slice(0, 6).map((item, index) => (
+            <Reveal key={item.value} delay={index * 70} className="h-full">
+              <ServiceTile name={pick(item, 'value')} source={item.value} />
             </Reveal>
           ))}
         </div>
@@ -158,7 +158,7 @@ export default function Home() {
 }
 
 function HeroShowcase({ slides, chips }) {
-  const { t, tr, isRtl } = useI18n();
+  const { t, pick, isRtl } = useI18n();
   const [index, setIndex] = useState(0);
   const [paused, setPaused] = useState(false);
   const touchStart = useRef(null);
@@ -256,11 +256,11 @@ function HeroShowcase({ slides, chips }) {
         ) : null}
       </Tile>
 
-      {chips.map((name, chipIndex) => {
-        const Icon = serviceIcon(name);
+      {chips.map((item, chipIndex) => {
+        const Icon = serviceIcon(item.value);
         return (
           <Tile
-            key={name}
+            key={item.value}
             cut={9}
             className={`bob absolute z-20 hidden sm:flex ${chipIndex === 0 ? '-top-1 end-4' : 'bottom-2 start-[-1rem]'}`}
             style={{ animationDelay: `${chipIndex * -3.5}s` }}
@@ -268,7 +268,7 @@ function HeroShowcase({ slides, chips }) {
             aria-hidden="true"
           >
             <Icon className="text-turq" />
-            <span>{tr(name)}</span>
+            <span>{pick(item, 'value')}</span>
           </Tile>
         );
       })}
